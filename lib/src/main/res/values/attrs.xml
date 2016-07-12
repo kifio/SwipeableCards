@@ -5,5 +5,6 @@
         <attr name="marginStep" format="dimension"/>
         <attr name="movable" format="boolean" />
         <attr name="swipeable" format="boolean" />
+        <attr name="count_visible" format="integer" />
     </declare-styleable>
 </resources>

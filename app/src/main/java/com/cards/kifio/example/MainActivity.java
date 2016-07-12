@@ -13,7 +13,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.a_main);
         CardsView cardsView = (CardsView) findViewById(R.id.cardsView);
         ContentAdapter<String> adapter = new ContentAdapter<>(new String[] {"Moscow", "London", "Helsinki", "Paris", "Berlin", "London"});
-        cardsView.setAdapter(adapter);
-        cardsView.init();
+        try {
+            cardsView.setAdapter(adapter);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        cardsView.reload();
     }
 }
