@@ -1,6 +1,5 @@
 package com.cards.kifio.swipeablecards;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -14,32 +13,25 @@ public class ReviewAnimation extends Animation {
 
     private static final String TAG = "RG-ReviewAnimation";
 
-    private int mTargetLeftMargin;
-    private int mInitialLeftMargin;
-    private int mInitialY;
-
-    private int mTargetPosition;
+    private int mInitialLeftMargin, mTargetLeftMargin, mInitialY, mTargetY;
 
     private View mView;
-    ViewGroup.MarginLayoutParams lp;
 
     public ReviewAnimation(View view, int targetLeftMargin, int targetPosition) {
-
         mView = view;
-        lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-
-
-        mTargetLeftMargin = lp.leftMargin - targetLeftMargin;
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         mInitialLeftMargin = lp.leftMargin;
+        mTargetLeftMargin = mInitialLeftMargin - targetLeftMargin;
         mInitialY = (int) mView.getY();
-        mTargetPosition = (int) (mView.getY() - targetPosition);
+        mTargetY = mInitialY - targetPosition;
     }
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
 
         int leftMargin = (int) (mTargetLeftMargin * interpolatedTime);
-        int dy = (int) (mTargetPosition * interpolatedTime);
+        int dy = (int) (mTargetY * interpolatedTime);
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
 
         lp.leftMargin = mInitialLeftMargin - leftMargin;
         lp.rightMargin = mInitialLeftMargin - leftMargin;
@@ -49,8 +41,7 @@ public class ReviewAnimation extends Animation {
     }
 
     @Override
-    public void initialize(int width, int height, int parentWidth,
-                           int parentHeight) {
+    public void initialize(int width, int height, int parentWidth, int parentHeight) {
         super.initialize(width, height, parentWidth, parentHeight);
     }
 

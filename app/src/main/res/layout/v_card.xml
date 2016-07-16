@@ -13,28 +13,28 @@
         android:orientation="vertical">
 
         <ImageView
+            android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="128dp"
             android:layout_gravity="center"
             android:layout_margin="8dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/otradnoe"/>
+            android:scaleType="centerCrop"/>
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:gravity="center_horizontal"
-            android:layout_gravity="center_horizontal"
-            android:text="Moscow"/>
+            android:layout_gravity="center_horizontal"/>
 
         <TextView
+            android:id="@+id/subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:gravity="center_horizontal"
-            android:layout_gravity="center_horizontal"
-            android:text="London is a capital of Great Britain"/>
+            android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
 
