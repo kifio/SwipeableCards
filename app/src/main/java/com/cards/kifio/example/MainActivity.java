@@ -3,6 +3,7 @@ package com.cards.kifio.example;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,22 @@ public class MainActivity extends AppCompatActivity {
         data.add("Helsinki");
         data.add("Paris");
         data.add("Berlin");
+        data.add("Tokyo");
+        data.add("Washington");
+        data.add("Moscow");
+        data.add("London");
+        data.add("Helsinki");
+        data.add("Paris");
+        data.add("Berlin");
+        data.add("Tokyo");
+        data.add("Washington");
+        data.add("Moscow");
+        data.add("London");
+        data.add("Helsinki");
+        data.add("Paris");
+        data.add("Berlin");
+        data.add("Tokyo");
+        data.add("Washington");
 
         ContentAdapter<String> adapter = new Adapter(this, data);
         try {
@@ -50,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (view == null) {
+                Log.d("Test", "inflate new card");
                 view = LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
                 view.setTag(new Holder(view));
             }
@@ -57,9 +75,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void initView(View view, int pos) {
+        public void initHolder(View view, int pos) {
             Holder viewHolder = (Holder) view.getTag();
             viewHolder.init(getItem(pos));
+        }
+
+        @Override
+        public void destroyView(View view) {
+            Holder viewHolder = (Holder) view.getTag();
+            view.setTag(null);
+            viewHolder.destroy();
         }
     }
 
@@ -78,11 +103,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void init(String element) {
             title.setText(element);
+            image.setImageResource(R.drawable.otradnoe);
         }
 
         @Override
         public void destroy() {
-
+            image = null;
+            title = null;
+            subtitle = null;
         }
     }
 }

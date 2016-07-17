@@ -50,7 +50,9 @@ public abstract class ContentAdapter<T> extends BaseAdapter {
         return view;
     }
 
-    public abstract void initView(View view, int pos);
+    public abstract void initHolder(View view, int pos);
+
+    public abstract void destroyView(View view);
 
     public interface ViewHolder<T> {
 
