@@ -4,13 +4,17 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.os.StrictMode;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
+
+import java.util.Locale;
 
 /**
  * Created by kifio on 7/6/16.
@@ -23,20 +27,27 @@ public class CardsView extends RelativeLayout implements View.OnTouchListener, A
     private static final float SWIPE_OFFSET_LIMIT = 10;
     private static final int DEFAULT_VISIBLE_VIEWS_COUNT = 3;
 
+    private static final int ORDER_NATURAL = 0;
+    private static final int ORDER_REVERSE = 1;
+
     private float mInitialTouchX, mInitialTouchY;
     private boolean mAnimLock, mClick;
 
     private ContentAdapter mAdapter;
 
-    private int mBaseMargin;
-    private int mMarginStep;
+    private float mBaseMargin;
+    private float mMarginStep;
     private int mVisibleViewsCount;
-    private int mNext;
+    private int mOrder;
+    private int mCurrentVisiblePosition;
 
     public CardsView(Context context) {
         super(context);
         Resources res = getResources();
-        init((int) res.getDimension(R.dimen.default_base_margin), (int) res.getDimension(R.dimen.default_step), DEFAULT_VISIBLE_VIEWS_COUNT);
+        mBaseMargin = res.getDimension(R.dimen.default_base_margin);
+        mMarginStep = res.getDimension(R.dimen.default_step);
+        mVisibleViewsCount = DEFAULT_VISIBLE_VIEWS_COUNT;
+        mOrder = ORDER_NATURAL;
     }
 
     public CardsView(Context context, AttributeSet attrs) {
@@ -44,46 +55,51 @@ public class CardsView extends RelativeLayout implements View.OnTouchListener, A
         TypedArray attributesValues = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CardsView, 0, 0);
         Resources res = getResources();
         try {
-            init((int) attributesValues.getDimension(R.styleable.CardsView_topCardMargin, (int) res.getDimension(R.dimen.default_base_margin)),
-                    (int) attributesValues.getDimension(R.styleable.CardsView_marginStep, (int) res.getDimension(R.dimen.default_step)),
-                    attributesValues.getInt(R.styleable.CardsView_count_visible, DEFAULT_VISIBLE_VIEWS_COUNT));
+            mBaseMargin = attributesValues.getDimension(R.styleable.CardsView_topCardMargin, res.getDimension(R.dimen.default_base_margin));
+            mMarginStep = attributesValues.getDimension(R.styleable.CardsView_topCardMargin, (int) res.getDimension(R.dimen.default_base_margin));
+            mVisibleViewsCount = attributesValues.getInt(R.styleable.CardsView_count_visible, DEFAULT_VISIBLE_VIEWS_COUNT);
+            mOrder = attributesValues.getInt(R.styleable.CardsView_order, ORDER_NATURAL);
         } finally {
             attributesValues.recycle();
         }
     }
 
-    private void init(int baseMargin, int marginStep, int visibleViewsCount) {
-        mBaseMargin = baseMargin;
-        mMarginStep = marginStep;
-        mVisibleViewsCount = visibleViewsCount;
-    }
-
-    public void setAdapter(ContentAdapter adapter) throws Throwable {
-        if (mVisibleViewsCount > adapter.getCount())
-            throw new Throwable("Not enough elements in adapter. Must be at least: " + mVisibleViewsCount);
+    public void setAdapter(ContentAdapter adapter) {
+        if (mVisibleViewsCount > adapter.getCount()) {
+            mVisibleViewsCount = adapter.getCount();
+        }
         mAdapter = adapter;
     }
 
-    public void reload() {
-        mAnimLock = false; mClick = false;
-        mNext = 0;
-        View child;
-        removeAllViews();
-        int position, count = mAdapter.getCount();
+    public void reload(boolean inited) {
+
+        mAnimLock = false;  // Одна анимация в один момент времени.
+        mClick = false;     // Отслеживаем нажатие.
+
+        SwipeableCard child;
+
+        int position;
+        int count = mAdapter.getCount();
+        mCurrentVisiblePosition = /*mOrder == ORDER_NATURAL ? (mVisibleViewsCount - 1) :*/ 0;
+
         for (int i = 0; i < count; i++) {
-            child = mAdapter.getView(i, null, this);
-            addView(child, i);
+            if (!inited) {
+                child = (SwipeableCard) mAdapter.getView(i, null, this);
+                addView(child, i);
+            } else {
+                child = (SwipeableCard) getChildAt(i);
+            }
             position = count - (i + 1);
+
             if (position < mVisibleViewsCount) {
                 initView(child, position, i);
                 if (position == 0) {
-                    mAdapter.initHolder(child, mNext);
+                    mAdapter.initHolder(child, mCurrentVisiblePosition);
                     child.setOnTouchListener(this);
                 }
             } else
                 child.setVisibility(INVISIBLE);
         }
-        mNext++;
     }
 
     // On CardTouChListener
@@ -110,9 +126,9 @@ public class CardsView extends RelativeLayout implements View.OnTouchListener, A
                 } else {
                     v.getParent().getParent().getParent().getParent().requestDisallowInterceptTouchEvent(true);
                     if (dx < -SWIPE_OFFSET_LIMIT && !mAnimLock)
-                        startAnimation(v, R.anim.slide_out_left);
+                        startAnimation((SwipeableCard) v, R.anim.slide_out_left);
                     else if (dx > SWIPE_OFFSET_LIMIT && !mAnimLock)
-                        startAnimation(v, R.anim.slide_out_right);
+                        startAnimation((SwipeableCard) v, R.anim.slide_out_right);
                 }
                 break;
 
@@ -127,16 +143,15 @@ public class CardsView extends RelativeLayout implements View.OnTouchListener, A
         return true;
     }
 
-    private void initView(View view, int relativePosition, int translation) {
+    private void initView(SwipeableCard view, int relativePosition, int translation) {
         int topMargin, sideMargin;
-        topMargin = mMarginStep * relativePosition;
-        sideMargin = mBaseMargin + topMargin;
+        topMargin = (int) (mMarginStep + (mMarginStep * relativePosition));
+        sideMargin = (int) mBaseMargin + topMargin;
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, view.getMeasuredHeight());
         lp.setMargins(sideMargin, topMargin, sideMargin, 0);
-        lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
         view.setLayoutParams(lp);
+        view.setClipRect((int) mMarginStep);
         setTranslationZ(view, translation);
         view.setVisibility(VISIBLE);
     }
@@ -145,13 +160,14 @@ public class CardsView extends RelativeLayout implements View.OnTouchListener, A
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) view.setTranslationZ(translation);
     }
 
-    private void startAnimation(View firstReview, int animId) {
+    private void startAnimation(SwipeableCard firstReview, int animId) {
         mAnimLock = true;
-        int count = getChildCount();
+        int count = getChildCount() - mCurrentVisiblePosition;
         int firstInvisiblePosition = count - (mVisibleViewsCount + 1);
+        mCurrentVisiblePosition++;
 
         if (firstInvisiblePosition >= 0) {
-            View invisibleView = getChildAt(firstInvisiblePosition);
+            SwipeableCard invisibleView = (SwipeableCard) getChildAt(firstInvisiblePosition);
             initView(invisibleView, mVisibleViewsCount - 1, firstInvisiblePosition);
         }
 
@@ -172,16 +188,15 @@ public class CardsView extends RelativeLayout implements View.OnTouchListener, A
 
             if (srcView != null) {
                 if (srcPos == 2) {
-                    mAdapter.initHolder(srcView, mNext);
+                    mAdapter.initHolder(srcView, mCurrentVisiblePosition);
                     srcView.setOnTouchListener(this);
                 }
 
-                Animation anim = new ReviewAnimation(srcView, mBaseMargin + mMarginStep * (i - 1), (int) destView.getY());
+                Animation anim = new ReviewAnimation(srcView, (int) (mBaseMargin + mMarginStep * (i - 1)), (int) destView.getY());
                 anim.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
                 srcView.startAnimation(anim);
             }
         }
-        mNext++;
     }
 
     @Override
@@ -189,9 +204,11 @@ public class CardsView extends RelativeLayout implements View.OnTouchListener, A
         mAnimLock = false;
         View view = getChildAt(getChildCount() - 1);
         view.setOnTouchListener(null);
-        mAdapter.destroyView(view);
-        removeView(view);
-        if (getChildCount() == 0) reload();
+        view.setVisibility(GONE);
+//        mAdapter.destroyView(view);
+//        removeView(view);
+        Log.d(TAG, String.format(Locale.getDefault(), "onAnimationEnd: %d : %d ", getChildCount(), mCurrentVisiblePosition));
+        if (getChildCount() == mCurrentVisiblePosition) reload(true);
     }
 
     @Override

@@ -27,32 +27,10 @@ public class MainActivity extends AppCompatActivity {
         data.add("Moscow");
         data.add("London");
         data.add("Helsinki");
-        data.add("Paris");
-        data.add("Berlin");
-        data.add("Tokyo");
-        data.add("Washington");
-        data.add("Moscow");
-        data.add("London");
-        data.add("Helsinki");
-        data.add("Paris");
-        data.add("Berlin");
-        data.add("Tokyo");
-        data.add("Washington");
-        data.add("Moscow");
-        data.add("London");
-        data.add("Helsinki");
-        data.add("Paris");
-        data.add("Berlin");
-        data.add("Tokyo");
-        data.add("Washington");
 
         ContentAdapter<String> adapter = new Adapter(this, data);
-        try {
-            cardsView.setAdapter(adapter);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-        cardsView.reload();
+        cardsView.setAdapter(adapter);
+        cardsView.reload(false);
     }
 
     static class Adapter extends ContentAdapter<String> {
@@ -67,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (view == null) {
-                Log.d("Test", "inflate new card");
                 view = LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
                 view.setTag(new Holder(view));
             }

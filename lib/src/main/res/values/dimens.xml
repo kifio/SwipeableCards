@@ -3,6 +3,7 @@
     <dimen name="default_base_margin">16dp</dimen>
     <dimen name="default_step">8dp</dimen>
 
+    <dimen name="value_4_dp">4dp</dimen>
     <dimen name="value_3_dp">3dp</dimen>
     <dimen name="value_2_dp">2dp</dimen>
     <dimen name="value_1_dp">1dp</dimen>
