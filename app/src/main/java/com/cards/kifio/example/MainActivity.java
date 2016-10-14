@@ -26,11 +26,11 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> data = new ArrayList<>();
         data.add("Moscow");
         data.add("London");
-        data.add("Helsinki");
+        data.add("London");
 
         ContentAdapter<String> adapter = new Adapter(this, data);
         cardsView.setAdapter(adapter);
-        cardsView.reload(false);
+        cardsView.reload();
     }
 
     static class Adapter extends ContentAdapter<String> {

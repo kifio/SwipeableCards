@@ -17,11 +17,11 @@ public class ReviewAnimation extends Animation {
 
     private View mView;
 
-    public ReviewAnimation(View view, int targetLeftMargin, int targetPosition) {
+    public ReviewAnimation(View view, int margin, int targetPosition) {
         mView = view;
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         mInitialLeftMargin = lp.leftMargin;
-        mTargetLeftMargin = mInitialLeftMargin - targetLeftMargin;
+        mTargetLeftMargin = margin;
         mInitialY = (int) mView.getY();
         mTargetY = mInitialY - targetPosition;
     }
