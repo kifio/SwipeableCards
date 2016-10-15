@@ -1,6 +1,7 @@
 package com.cards.kifio.example;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         data.add("Moscow");
         data.add("London");
         data.add("London");
+        data.add("London");
 
         ContentAdapter<String> adapter = new Adapter(this, data);
         cardsView.setAdapter(adapter);
@@ -44,50 +46,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            if (view == null) {
-                view = LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
-                view.setTag(new Holder(view));
+//            view = LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
+            TextView number = (TextView) view.findViewById(R.id.number);
+            number.setText(String.valueOf(i));
+            if (i == 0) {
+                view.setBackgroundColor(Color.BLUE);
+            } else if (i == 1) {
+                view.setBackgroundColor(Color.RED);
+            } else {
+                view.setBackgroundColor(Color.GREEN);
             }
-            return super.getView(i, view, viewGroup);
+            return view;
         }
 
-        @Override
-        public void initHolder(View view, int pos) {
-            Holder viewHolder = (Holder) view.getTag();
-            viewHolder.init(getItem(pos));
-        }
-
-        @Override
-        public void destroyView(View view) {
-            Holder viewHolder = (Holder) view.getTag();
-            view.setTag(null);
-            viewHolder.destroy();
-        }
-    }
-
-    static class Holder implements ContentAdapter.ViewHolder<String> {
-
-        ImageView image;
-        TextView title;
-        TextView subtitle;
-
-        public Holder(View view) {
-            image = (ImageView) view.findViewById(R.id.image);
-            title = (TextView) view.findViewById(R.id.title);
-            subtitle = (TextView) view.findViewById(R.id.subtitle);
-        }
-
-        @Override
-        public void init(String element) {
-            title.setText(element);
-            image.setImageResource(R.drawable.otradnoe);
-        }
-
-        @Override
-        public void destroy() {
-            image = null;
-            title = null;
-            subtitle = null;
-        }
     }
 }

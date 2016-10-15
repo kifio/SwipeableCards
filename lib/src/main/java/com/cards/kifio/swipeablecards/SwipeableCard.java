@@ -13,7 +13,7 @@ import android.view.View;
 
 public class SwipeableCard extends CardView {
 
-    private Rect mClippingRect;
+//    private Rect mClippingRect;
 
     public SwipeableCard(Context context) {
         super(context);
@@ -25,11 +25,11 @@ public class SwipeableCard extends CardView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.clipRect(mClippingRect);
+//        canvas.clipRect(mClippingRect);
         super.onDraw(canvas);
     }
 
     public void setClipRect(int height) {
-        mClippingRect = new Rect(getLeft(), getBottom() + height, getRight(), getBottom());
+//        mClippingRect = new Rect(getLeft(), getBottom() + height, getRight(), getBottom());
     }
 }
