@@ -1,5 +1,6 @@
 package com.cards.kifio.swipeablecards;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -28,7 +29,6 @@ public class ReviewAnimation extends Animation {
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
-
         int leftMargin = (int) (mTargetLeftMargin * interpolatedTime);
         int dy = (int) (mTargetY * interpolatedTime);
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mView.getLayoutParams();

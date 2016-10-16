@@ -46,17 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-//            view = LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
-            TextView number = (TextView) view.findViewById(R.id.number);
-            number.setText(String.valueOf(i));
-            if (i == 0) {
-                view.setBackgroundColor(Color.BLUE);
-            } else if (i == 1) {
-                view.setBackgroundColor(Color.RED);
-            } else {
-                view.setBackgroundColor(Color.GREEN);
-            }
-            return view;
+            return LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
         }
 
     }
