@@ -14,29 +14,35 @@ public class ReviewAnimation extends Animation {
 
     private static final String TAG = "RG-ReviewAnimation";
 
-    private int mInitialLeftMargin, mTargetLeftMargin, mInitialY, mTargetY;
+    private float mInitialMargin, mMarginDiff, mInitialY, mYDiff;
 
     private View mView;
+    private ViewGroup.MarginLayoutParams mLp;
 
-    public ReviewAnimation(View view, int margin, int targetPosition) {
+    ReviewAnimation(View view, float marginDiff) {
+
         mView = view;
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        mInitialLeftMargin = lp.leftMargin;
-        mTargetLeftMargin = margin;
-        mInitialY = (int) mView.getY();
-        mTargetY = mInitialY - targetPosition;
+        mLp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+
+        mInitialMargin = mLp.leftMargin;
+        mInitialY = mView.getY();
+
+        Log.d(TAG, "marginDiff: " + marginDiff);
+
+        mMarginDiff = marginDiff;
+        mYDiff = marginDiff;
     }
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
-        int leftMargin = (int) (mTargetLeftMargin * interpolatedTime);
-        int dy = (int) (mTargetY * interpolatedTime);
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
 
-        lp.leftMargin = mInitialLeftMargin - leftMargin;
-        lp.rightMargin = mInitialLeftMargin - leftMargin;
+        float leftMargin = mMarginDiff * interpolatedTime;
+        float dy = mYDiff * interpolatedTime;
+
+        mLp.leftMargin = (int) (mInitialMargin - leftMargin);
+        mLp.rightMargin = (int) (mInitialMargin - leftMargin);
+
         mView.setY(mInitialY - dy);
-
         mView.requestLayout();
     }
 

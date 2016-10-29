@@ -41,4 +41,10 @@ public abstract class ContentAdapter<T> {
     public View getView(int i, View view, ViewGroup viewGroup) {
         return view;
     }
+
+    public abstract void initCard(SwipeableCard card);
+
+    public static class SwipeableCardHolder {
+
+    }
 }
