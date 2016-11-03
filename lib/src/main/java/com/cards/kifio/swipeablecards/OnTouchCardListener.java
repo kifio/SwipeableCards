@@ -43,18 +43,25 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
                 if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > mCardsView.mSwipeWidth) {
                     mClick = false;
-                    v.getParent().getParent().getParent().getParent().requestDisallowInterceptTouchEvent(true);
                     if (dx < -SWIPE_OFFSET_LIMIT && !mCardsView.mAnimLock) {
-                        mCardsView.handleSwipe((View) v, R.anim.slide_out_left);
+                        if (v instanceof SwipeableCard) {
+                            mCardsView.handleSwipe((SwipeableCard) v, R.anim.slide_out_left);
+                        } else {
+                            mCardsView.handleSwipe(recursiveCardSearch(v), R.anim.slide_out_left);
+                        }
                     } else if (dx > SWIPE_OFFSET_LIMIT && !mCardsView.mAnimLock) {
-                        mCardsView.handleSwipe((View) v, R.anim.slide_out_right);
+                        if (v instanceof SwipeableCard) {
+                            mCardsView.handleSwipe((SwipeableCard) v, R.anim.slide_out_right);
+                        } else {
+                            mCardsView.handleSwipe(recursiveCardSearch(v),  R.anim.slide_out_right);
+                        }
                     }
                 }
                 break;
 
             case MotionEvent.ACTION_UP:
                 if (mClick) {
-
+                    v.performClick();
                 }
                 return false;
 
@@ -62,6 +69,15 @@ public class OnTouchCardListener implements View.OnTouchListener {
                 return false;
         }
         return true;
+    }
+
+    private SwipeableCard recursiveCardSearch(View view) {
+        View parent = (View) view.getParent();
+        if (parent instanceof SwipeableCard) {
+            return (SwipeableCard) parent;
+        } else {
+            return recursiveCardSearch(parent);
+        }
     }
 
 }

@@ -1,6 +1,5 @@
 package com.cards.kifio.swipeablecards;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -9,7 +8,7 @@ import android.view.animation.Transformation;
 /**
  * Created by kifio on 7/6/16.
  */
-// TODO: refactoring
+
 public class ReviewAnimation extends Animation {
 
     private static final String TAG = "RG-ReviewAnimation";
@@ -19,7 +18,7 @@ public class ReviewAnimation extends Animation {
     private View mView;
     private ViewGroup.MarginLayoutParams mLp;
 
-    ReviewAnimation(View view, float marginDiff) {
+    ReviewAnimation(View view, float marginDiff, float yDiff) {
 
         mView = view;
         mLp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
@@ -27,10 +26,8 @@ public class ReviewAnimation extends Animation {
         mInitialMargin = mLp.leftMargin;
         mInitialY = mView.getY();
 
-        Log.d(TAG, "marginDiff: " + marginDiff);
-
         mMarginDiff = marginDiff;
-        mYDiff = marginDiff;
+        mYDiff = yDiff;
     }
 
     @Override

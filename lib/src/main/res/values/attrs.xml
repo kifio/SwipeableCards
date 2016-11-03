@@ -6,7 +6,7 @@
         <attr name="movable" format="boolean" />
         <attr name="swipeable" format="boolean" />
         <attr name="infinite" format="boolean" />
-        <attr name="count_visible" format="integer" />
+        <attr name="visibleViewsCount" format="integer" />
         <attr name="order" format="enum">
             <enum name="natural" value="0"/>
             <enum name="reverse" value="1"/>

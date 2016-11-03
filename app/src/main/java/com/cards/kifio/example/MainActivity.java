@@ -25,9 +25,6 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> data = new ArrayList<>();
         data.add("Moscow");
         data.add("London");
-        data.add("London");
-        data.add("London");
-        data.add("London");
 
         ContentAdapter<String> adapter = new Adapter(this, data);
         cardsView.setDataSet(adapter);
@@ -44,19 +41,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            if (view == null) {
-                view = LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
-                TextView tv = (TextView) view.findViewById(R.id.number);
-                tv.setText(String.valueOf(i));
-                view.setTag(new SwipeableCardHolder());
-            }
-            return view;
+        public SwipeableCard getView(int i, ViewGroup viewGroup) {
+            return (PhotoCard) LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
         }
 
         @Override
         public void initCard(SwipeableCard child) {
-            SwipeableCardHolder holder = (SwipeableCardHolder) child.getTag();
+
         }
 
     }

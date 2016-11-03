@@ -38,9 +38,7 @@ public abstract class ContentAdapter<T> {
         return mData.get(i);
     }
 
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        return view;
-    }
+    public abstract View getView(int i, ViewGroup viewGroup);
 
     public abstract void initCard(SwipeableCard card);
 
