@@ -25,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> data = new ArrayList<>();
         data.add("Moscow");
         data.add("London");
+        data.add("London");
+        data.add("London");
+        data.add("London");
+        data.add("London");
+        data.add("London");
 
         ContentAdapter<String> adapter = new Adapter(this, data);
         cardsView.setDataSet(adapter);
@@ -42,7 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public SwipeableCard getView(int i, ViewGroup viewGroup) {
-            return (PhotoCard) LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
+            PhotoCard card = (PhotoCard) LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
+            TextView tv = (TextView) card.findViewById(R.id.text);
+            tv.setText(String.valueOf(i));
+            return card;
         }
 
         @Override

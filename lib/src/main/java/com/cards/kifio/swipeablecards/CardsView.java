@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
@@ -38,7 +39,6 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     public CardsView(Context context) {
         super(context);
         Resources res = getResources();
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         mContext = (Activity) context;
         mTopMargin = (int) res.getDimension(R.dimen.default_base_margin);
         mMarginStep = (int) res.getDimension(R.dimen.default_step);
@@ -47,7 +47,6 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
     public CardsView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         TypedArray attrs =
                 context.getTheme().obtainStyledAttributes(attrSet, R.styleable.CardsView, 0, 0);
         Resources res = getResources();
@@ -97,28 +96,21 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     // On CardTouChListener
     private void initView(SwipeableCard view, int position) {
         float topMargin, sideMargin;
+
         topMargin = mTopMargin * (position + 1);
         sideMargin = mMarginStep * (position + 1);
-        view.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-        LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        lp.setMargins((int) sideMargin, (int) topMargin, (int) sideMargin, (int) mMarginStep);
-        lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-        view.setLayoutParams(lp);
-        if (position > 0) {
-            view.setClipRect((int) mTopMargin);
-        } else {
-            view.setClipRect(0);
-        }
-        Log.d(TAG, "initView: " + (mAdapter.getCount() - position - 1));
-        setTranslationZ(view, mAdapter.getCount() - position - 1);
-        view.setVisibility(VISIBLE);
-    }
 
-    private void setTranslationZ(View view, int translation) {
+        LayoutParams lp = (LayoutParams) view.getLayoutParams();
+        lp.setMargins((int) sideMargin, (int) topMargin, (int) sideMargin, 0);
+
+        view.setLayoutParams(lp);
+        view.setClipRect(position > 0 ? (int) mTopMargin : 0);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.setTranslationZ(translation);
+            view.setTranslationZ(mAdapter.getCount() - position - 1);
         }
+
+        view.setVisibility(VISIBLE);
     }
 
     private void startAnimation(SwipeableCard firstReview, int animId) {
@@ -129,7 +121,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
         if (firstInvisiblePosition >= 0) {
             SwipeableCard invisibleView = (SwipeableCard) getChildAt(firstInvisiblePosition);
-            initView(invisibleView, firstInvisiblePosition);
+            initView(invisibleView, 0);
         }
 
         Animation swipeAnimation = AnimationUtils.loadAnimation(getContext(), animId);
@@ -137,7 +129,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         firstReview.startAnimation(swipeAnimation);
 
         SwipeableCard view;
-        int starPosition = count - 2;
+        int starPosition = count - 3;
 
         for (int i = starPosition; i >= 0; i--) {
             view = (SwipeableCard) getChildAt(i);
