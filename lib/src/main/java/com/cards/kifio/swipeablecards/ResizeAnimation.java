@@ -9,16 +9,16 @@ import android.view.animation.Transformation;
  * Created by kifio on 7/6/16.
  */
 
-public class ReviewAnimation extends Animation {
+public class ResizeAnimation extends Animation {
 
-    private static final String TAG = "RG-ReviewAnimation";
+    private static final String TAG = "RG-ResizeAnimation";
 
     private float mInitialMargin, mMarginDiff, mInitialY, mYDiff;
 
     private View mView;
     private ViewGroup.MarginLayoutParams mLp;
 
-    ReviewAnimation(View view, float marginDiff, float yDiff) {
+    ResizeAnimation(View view, float marginDiff, float yDiff) {
 
         mView = view;
         mLp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();

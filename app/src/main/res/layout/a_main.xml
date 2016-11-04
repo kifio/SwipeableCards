@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         app:topCardMargin="16dp"
         app:marginStep="8dp"
-        app:visibleViewsCount="5"
+        app:visibleViewsCount="4"
         app:order="natural"
         android:layout_centerInParent="true"/>
 
