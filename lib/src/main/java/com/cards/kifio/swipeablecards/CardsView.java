@@ -121,7 +121,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
         if (firstInvisiblePosition >= 0) {
             SwipeableCard invisibleView = (SwipeableCard) getChildAt(firstInvisiblePosition);
-            initView(invisibleView, 0);
+            initView(invisibleView, mVisibleViewsCount - 1);
         }
 
         Animation swipeAnimation = AnimationUtils.loadAnimation(getContext(), animId);
@@ -129,9 +129,9 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         firstReview.startAnimation(swipeAnimation);
 
         SwipeableCard view;
-        int starPosition = count - 3;
+        int starPosition = count - 2;
 
-        for (int i = starPosition; i >= 0; i--) {
+        for (int i = starPosition; i > count - (mVisibleViewsCount + 1); i--) {
             view = (SwipeableCard) getChildAt(i);
 
             if (i == starPosition) {
