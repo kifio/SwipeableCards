@@ -5,15 +5,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kifio on 7/6/16.
  */
 public abstract class ContentAdapter<T> {
 
-    private final ArrayList<T> mData;
+    protected final List<T> mData;
 
-    public ContentAdapter(ArrayList<T> data) {
+    public ContentAdapter(List<T> data) {
         mData = new ArrayList<>();
         mData.addAll(data);
     }
@@ -34,15 +35,7 @@ public abstract class ContentAdapter<T> {
         return mData.size();
     }
 
-    public T getItem(int i) {
-        return mData.get(i);
-    }
-
     public abstract View getView(int i, ViewGroup viewGroup);
 
     public abstract void initCard(SwipeableCard card);
-
-    public static class SwipeableCardHolder {
-
-    }
 }

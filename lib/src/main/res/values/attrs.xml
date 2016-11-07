@@ -3,13 +3,20 @@
     <declare-styleable name="CardsView">
         <attr name="topCardMargin" format="dimension"/>
         <attr name="marginStep" format="dimension"/>
-        <attr name="movable" format="boolean" />
-        <attr name="swipeable" format="boolean" />
-        <attr name="infinite" format="boolean" />
         <attr name="visibleViewsCount" format="integer" />
+
+        <!-- v 0.2 -->
+        <attr name="infinite" format="boolean" />
+
+        <!-- v 0.3 -->
         <attr name="order" format="enum">
             <enum name="natural" value="0"/>
             <enum name="reverse" value="1"/>
         </attr>
+
+        <!-- v 0.4 -->
+        <attr name="movable" format="boolean" />
+        <attr name="swipeable" format="boolean" />
+
     </declare-styleable>
 </resources>

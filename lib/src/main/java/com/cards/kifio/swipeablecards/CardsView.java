@@ -23,7 +23,6 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     private float mMarginStep = (int) getResources().getDimension(R.dimen.default_step);
     private int mVisibleViewsCount = getResources().getInteger(R.integer.default_visible_views_count);
     private int mAnimationDuraion = getResources().getInteger(android.R.integer.config_mediumAnimTime);
-    private OnTouchCardListener mListener = new OnTouchCardListener(this);
     private Activity mContext;
     private ContentAdapter mAdapter;
 
@@ -82,7 +81,6 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
                 initView(child, i, translationZ);
                 if (i == 0) {
                     mAdapter.initCard(child);
-                    child.setOnTouchListener(mListener);
                 }
             } else {
                 child.setVisibility(INVISIBLE);
@@ -139,7 +137,6 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
                 if (i == starPosition) {
                     view.setClipRect(0);    // draw all nested views of card.
                     mAdapter.initCard(view);    // set values for nested views.
-                    view.setOnTouchCardListener(mListener); // set onTouchListener for handling all touch events.
                 }
 
                 Animation anim = new ResizeAnimation(view, mMarginStep, mTopMargin);

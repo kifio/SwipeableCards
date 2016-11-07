@@ -2,6 +2,7 @@ package com.cards.kifio.swipeablecards;
 
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 
 /**
  * Created by kifio on 10/29/16.
@@ -9,15 +10,16 @@ import android.view.View;
 
 public class OnTouchCardListener implements View.OnTouchListener {
 
-    private static final float CLICK_OFFSET_LIMIT = 5.0f;
-    private static final float SWIPE_OFFSET_LIMIT = 10;
+    private static final String TAG = "OnTouchCardListener";
 
     private float mInitialTouchX, mInitialTouchY;
     private boolean mClick = false;
     private CardsView mCardsView;
+    private ViewParent mScrollableParent;
 
-    OnTouchCardListener(CardsView view) {
+    public OnTouchCardListener(CardsView view, ViewParent scrollableParent) {
         mCardsView = view;
+        mScrollableParent = scrollableParent;
     }
 
     @Override
@@ -43,18 +45,17 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
                 if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > mCardsView.mSwipeWidth) {
                     mClick = false;
-                    if (dx < -SWIPE_OFFSET_LIMIT && !mCardsView.mAnimLock) {
-                        if (v instanceof SwipeableCard) {
-                            mCardsView.handleSwipe((SwipeableCard) v, R.anim.slide_out_left);
-                        } else {
-                            mCardsView.handleSwipe(recursiveCardSearch(v), R.anim.slide_out_left);
-                        }
-                    } else if (dx > SWIPE_OFFSET_LIMIT && !mCardsView.mAnimLock) {
-                        if (v instanceof SwipeableCard) {
-                            mCardsView.handleSwipe((SwipeableCard) v, R.anim.slide_out_right);
-                        } else {
-                            mCardsView.handleSwipe(recursiveCardSearch(v),  R.anim.slide_out_right);
-                        }
+
+                    SwipeableCard card = recursiveCardSearch(v);
+
+                    if (mScrollableParent != null) {
+                        mScrollableParent.requestDisallowInterceptTouchEvent(true);
+                    }
+
+                    if (dx < -1 && !mCardsView.mAnimLock) {
+                        mCardsView.handleSwipe(card, R.anim.slide_out_left);
+                    } else if (dx > 1 && !mCardsView.mAnimLock) {
+                        mCardsView.handleSwipe(card, R.anim.slide_out_right);
                     }
                 }
                 break;
@@ -72,11 +73,10 @@ public class OnTouchCardListener implements View.OnTouchListener {
     }
 
     private SwipeableCard recursiveCardSearch(View view) {
-        View parent = (View) view.getParent();
-        if (parent instanceof SwipeableCard) {
-            return (SwipeableCard) parent;
+        if (view instanceof SwipeableCard) {
+            return (SwipeableCard) view;
         } else {
-            return recursiveCardSearch(parent);
+            return recursiveCardSearch((View) view.getParent());
         }
     }
 
