@@ -25,20 +25,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_main);
 
+        String[] data = getResources().getStringArray(R.array.lorem_ipsum);
+
         CardsView cardsView0 = (CardsView) findViewById(R.id.cardsView0);
         CardsView cardsView1 = (CardsView) findViewById(R.id.cardsView1);
         CardsView cardsView2 = (CardsView) findViewById(R.id.cardsView2);
         CardsView cardsView3 = (CardsView) findViewById(R.id.cardsView3);
-        OnTouchCardListener listener0 = new OnTouchCardListener(cardsView0, (ScrollView) findViewById(R.id.root));
-        OnTouchCardListener listener1 = new OnTouchCardListener(cardsView1, (ScrollView) findViewById(R.id.root));
-        OnTouchCardListener listener2 = new OnTouchCardListener(cardsView2, (ScrollView) findViewById(R.id.root));
-        OnTouchCardListener listener3 = new OnTouchCardListener(cardsView3, (ScrollView) findViewById(R.id.root));
 
-        String[] data = getResources().getStringArray(R.array.lorem_ipsum);
-        ContentAdapter<String> adapter0 = new Adapter(this, Arrays.asList(data), listener0);
-        ContentAdapter<String> adapter1 = new Adapter(this, Arrays.asList(data), listener1);
-        ContentAdapter<String> adapter2 = new Adapter(this, Arrays.asList(data), listener2);
-        ContentAdapter<String> adapter3 = new Adapter(this, Arrays.asList(data), listener3);
+        ContentAdapter<String> adapter0 = new Adapter(this, Arrays.asList(data));
+        ContentAdapter<String> adapter1 = new Adapter(this, Arrays.asList(data));
+        ContentAdapter<String> adapter2 = new Adapter(this, Arrays.asList(data));
+        ContentAdapter<String> adapter3 = new Adapter(this, Arrays.asList(data));
 
         cardsView0.setDataSet(adapter0);
         cardsView1.setDataSet(adapter1);
@@ -54,31 +51,24 @@ public class MainActivity extends AppCompatActivity {
     static class Adapter extends ContentAdapter<String> {
 
         private final Context mContext;
-        private OnTouchCardListener mListener;
 
-        Adapter(Context context, List<String> data, OnTouchCardListener listener) {
+        Adapter(Context context, List<String> data) {
             super(data);
             mContext = context;
-            mListener = listener;
         }
 
         @Override
-        public SwipeableCard getView(int i, ViewGroup viewGroup) {
+        public SwipeableCard getView(ViewGroup viewGroup) {
+            return (TextCard) LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
+        }
 
-            TextCard card = (TextCard) LayoutInflater.from(mContext).inflate(R.layout.v_card, viewGroup, false);
-
+        @Override
+        public void initCard(SwipeableCard card, int position) {
             TextView text = (TextView) card.findViewById(R.id.text);
             TextView cardNumber = (TextView) card.findViewById(R.id.cardNumber);
+            text.setText(mData.get(position));
+            cardNumber.setText(String.valueOf(position));
 
-            text.setText(mData.get(i));
-            cardNumber.setText(String.valueOf(i));
-
-            return card;
-        }
-
-        @Override
-        public void initCard(SwipeableCard child) {
-            child.setOnTouchCardListener(mListener);
         }
 
     }

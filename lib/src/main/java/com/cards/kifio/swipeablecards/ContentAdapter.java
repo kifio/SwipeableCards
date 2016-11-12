@@ -35,7 +35,7 @@ public abstract class ContentAdapter<T> {
         return mData.size();
     }
 
-    public abstract View getView(int i, ViewGroup viewGroup);
+    public abstract View getView(ViewGroup viewGroup);
 
-    public abstract void initCard(SwipeableCard card);
+    public abstract void initCard(SwipeableCard card, int i);
 }

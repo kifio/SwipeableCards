@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -25,6 +26,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     private int mAnimationDuraion = getResources().getInteger(android.R.integer.config_mediumAnimTime);
     private Activity mContext;
     private ContentAdapter mAdapter;
+    private OnTouchCardListener mDefaultOnTouchListener = null;
 
     @Override
     protected int computeHorizontalScrollExtent() {
@@ -70,17 +72,23 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     }
 
     public void reload() {
+
+        if (mDefaultOnTouchListener == null) {
+            mDefaultOnTouchListener = new OnTouchCardListener(this, null);
+        }
+
         int count = mAdapter.getCount();
         int translationZ;
         SwipeableCard child = null;
         for (int i = 0; i < count; i++) {
-            child = (SwipeableCard) mAdapter.getView(i, this);
+            child = (SwipeableCard) mAdapter.getView(this);
             addView(child, 0);
             if (i < mVisibleViewsCount) {
                 translationZ = count - i - 1;
                 initView(child, i, translationZ);
                 if (i == 0) {
-                    mAdapter.initCard(child);
+                    mAdapter.initCard(child, i);
+                    child.setOnTouchCardListener(mDefaultOnTouchListener);
                 }
             } else {
                 child.setVisibility(INVISIBLE);
@@ -135,8 +143,10 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
                 view = (SwipeableCard) getChildAt(i);
 
                 if (i == starPosition) {
+                    // TODO: Решить как вычислять позицию для элемента из адаптера.
                     view.setClipRect(0);    // draw all nested views of card.
-                    mAdapter.initCard(view);    // set values for nested views.
+                    mAdapter.initCard(view, count - 1);    // set values for nested views.
+                    view.setOnTouchCardListener(mDefaultOnTouchListener);
                 }
 
                 Animation anim = new ResizeAnimation(view, mMarginStep, mTopMargin);

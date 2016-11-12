@@ -17,7 +17,7 @@ public class OnTouchCardListener implements View.OnTouchListener {
     private CardsView mCardsView;
     private ViewParent mScrollableParent;
 
-    public OnTouchCardListener(CardsView view, ViewParent scrollableParent) {
+    OnTouchCardListener(CardsView view, ViewParent scrollableParent) {
         mCardsView = view;
         mScrollableParent = scrollableParent;
     }

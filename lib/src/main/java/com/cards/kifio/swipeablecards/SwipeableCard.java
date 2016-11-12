@@ -17,6 +17,7 @@ public class SwipeableCard extends CardView {
 
     private static final String TAG = "SwipeableCard";
     private Rect mRect;
+    private OnTouchCardListener mListener;
 
     public SwipeableCard(Context context) {
         super(context);
@@ -47,9 +48,16 @@ public class SwipeableCard extends CardView {
     }
 
     /**
-     * Method for setting on touch listeners for child views.
+     * Method for setting on touch listeners for child view.
      */
     public void setOnTouchCardListener(OnTouchCardListener listener) {
-        setOnTouchListener(listener);
+        mListener = listener;
+        setOnTouchListener(mListener);
     }
+
+    public OnTouchCardListener getOnTouchCardListener() {
+        return mListener;
+    }
+
+
 }
