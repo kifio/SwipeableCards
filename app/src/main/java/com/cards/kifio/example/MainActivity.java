@@ -25,17 +25,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_main);
 
-        String[] data = getResources().getStringArray(R.array.lorem_ipsum);
+        String[] data0 = getResources().getStringArray(R.array.lorem_ipsum0);
+        String[] data1 = getResources().getStringArray(R.array.lorem_ipsum1);
+        String[] data2 = getResources().getStringArray(R.array.lorem_ipsum2);
+        String[] data3 = getResources().getStringArray(R.array.lorem_ipsum3);
 
         CardsView cardsView0 = (CardsView) findViewById(R.id.cardsView0);
         CardsView cardsView1 = (CardsView) findViewById(R.id.cardsView1);
         CardsView cardsView2 = (CardsView) findViewById(R.id.cardsView2);
         CardsView cardsView3 = (CardsView) findViewById(R.id.cardsView3);
 
-        ContentAdapter<String> adapter0 = new Adapter(this, Arrays.asList(data));
-        ContentAdapter<String> adapter1 = new Adapter(this, Arrays.asList(data));
-        ContentAdapter<String> adapter2 = new Adapter(this, Arrays.asList(data));
-        ContentAdapter<String> adapter3 = new Adapter(this, Arrays.asList(data));
+        ContentAdapter<String> adapter0 = new Adapter(this, Arrays.asList(data0));
+        ContentAdapter<String> adapter1 = new Adapter(this, Arrays.asList(data1));
+        ContentAdapter<String> adapter2 = new Adapter(this, Arrays.asList(data2));
+        ContentAdapter<String> adapter3 = new Adapter(this, Arrays.asList(data3));
 
         cardsView0.setDataSet(adapter0);
         cardsView1.setDataSet(adapter1);

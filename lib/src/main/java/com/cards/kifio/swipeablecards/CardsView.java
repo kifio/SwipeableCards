@@ -87,8 +87,8 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
                 translationZ = count - i - 1;
                 initView(child, i, translationZ);
                 if (i == 0) {
-                    mAdapter.initCard(child, i);
                     child.setOnTouchCardListener(mDefaultOnTouchListener);
+                    mAdapter.initCard(child, i);
                 }
             } else {
                 child.setVisibility(INVISIBLE);
@@ -143,9 +143,8 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
                 view = (SwipeableCard) getChildAt(i);
 
                 if (i == starPosition) {
-                    // TODO: Решить как вычислять позицию для элемента из адаптера.
                     view.setClipRect(0);    // draw all nested views of card.
-                    mAdapter.initCard(view, count - 1);    // set values for nested views.
+                    mAdapter.initCard(view, ((mAdapter.getCount() - count) + 1));    // set values for nested views.
                     view.setOnTouchCardListener(mDefaultOnTouchListener);
                 }
 
