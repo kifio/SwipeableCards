@@ -18,6 +18,7 @@
             android:layout_height="match_parent"
             app:marginStep="4dp"
             app:order="natural"
+            app:infinite="true"
             app:topCardMargin="16dp"
             app:visibleViewsCount="4" />
 

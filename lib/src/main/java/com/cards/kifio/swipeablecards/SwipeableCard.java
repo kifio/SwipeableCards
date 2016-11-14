@@ -58,6 +58,4 @@ public class SwipeableCard extends CardView {
     public OnTouchCardListener getOnTouchCardListener() {
         return mListener;
     }
-
-
 }
