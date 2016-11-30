@@ -33,15 +33,15 @@ public class MainActivity extends AppCompatActivity {
         CardsView cardsView2 = (CardsView) findViewById(R.id.cardsView2);
         CardsView cardsView3 = (CardsView) findViewById(R.id.cardsView3);
 
-        ContentAdapter<String> adapter0 = new Adapter(this, Arrays.asList(data0), new OnTouchCardListener(cardsView0, (ViewParent) findViewById(R.id.root)));
-        ContentAdapter<String> adapter1 = new Adapter(this, Arrays.asList(data1), new OnTouchCardListener(cardsView1, (ViewParent) findViewById(R.id.root)));
-        ContentAdapter<String> adapter2 = new Adapter(this, Arrays.asList(data2), new OnTouchCardListener(cardsView2, (ViewParent) findViewById(R.id.root)));
-        ContentAdapter<String> adapter3 = new Adapter(this, Arrays.asList(data3), new OnTouchCardListener(cardsView3, (ViewParent) findViewById(R.id.root)));
+        cardsView0.setAdapter(new Adapter(this, Arrays.asList(data0)));
+        cardsView1.setAdapter(new Adapter(this, Arrays.asList(data1)));
+        cardsView2.setAdapter(new Adapter(this, Arrays.asList(data2)));
+        cardsView3.setAdapter(new Adapter(this, Arrays.asList(data3)));
 
-        cardsView0.setAdapter(adapter0);
-        cardsView1.setAdapter(adapter1);
-        cardsView2.setAdapter(adapter2);
-        cardsView3.setAdapter(adapter3);
+        cardsView0.setScrollableParent((ViewParent) findViewById(R.id.root));
+        cardsView1.setScrollableParent((ViewParent) findViewById(R.id.root));
+        cardsView2.setScrollableParent((ViewParent) findViewById(R.id.root));
+        cardsView3.setScrollableParent((ViewParent) findViewById(R.id.root));
 
         cardsView0.reload();
         cardsView1.reload();
@@ -51,13 +51,11 @@ public class MainActivity extends AppCompatActivity {
 
     static class Adapter extends ContentAdapter<String> {
 
-        private final Context mContext;
-        private OnTouchCardListener mListener;
+        private final Context mContext;;
 
-        Adapter(Context context, List<String> data, OnTouchCardListener listener) {
-            super(data);
+        Adapter(Context context, List<String> data) {
+                super(data);
             mContext = context;
-            mListener = listener;
         }
 
         @Override
@@ -71,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
             TextView cardNumber = (TextView) card.findViewById(R.id.cardNumber);
             text.setText(mData.get(position));
             cardNumber.setText(String.valueOf(position));
-            card.setOnTouchCardListener(mListener);
         }
 
     }

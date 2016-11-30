@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
@@ -21,14 +20,17 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
     private static final String TAG = "kifio-CardsView";
 
-    private float mTopMargin = (int) getResources().getDimension(R.dimen.default_base_margin);
-    private float mMarginStep = (int) getResources().getDimension(R.dimen.default_step);
-    private int mVisibleViewsCount = getResources().getInteger(R.integer.default_visible_views_count);
-    private int mAnimationDuraion = getResources().getInteger(android.R.integer.config_mediumAnimTime);
-    private boolean mInfinite = false;
+    private int mMarginTop;
+    private int mMarginLeft;
+    private int mMarginRight;
+    private int mMarginBottom;
+
+    private int mMarginStep;
+    private int mVisibleViewsCount;
+
     private Activity mContext;
     private ContentAdapter mAdapter;
-    private OnTouchCardListener mDefaultOnTouchListener;
+    private OnTouchCardListener mDefaultOnTouchListener = new OnTouchCardListener(this);
 
     @Override
     protected int computeHorizontalScrollExtent() {
@@ -46,15 +48,26 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
     public CardsView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
-        TypedArray attrs =
-                context.getTheme().obtainStyledAttributes(attrSet, R.styleable.CardsView, 0, 0);
+        TypedArray attrs = context.getTheme().obtainStyledAttributes(attrSet, R.styleable.CardsView, 0, 0);
         Resources res = getResources();
         mContext = (Activity) context;
+
         try {
-            mInfinite = attrs.getBoolean(R.styleable.CardsView_infinite, false);
-            mTopMargin = attrs.getDimension(R.styleable.CardsView_topCardMargin, res.getDimension(R.dimen.default_base_margin));
-            mMarginStep = attrs.getDimension(R.styleable.CardsView_marginStep, res.getDimension(R.dimen.default_step));
-            mVisibleViewsCount = attrs.getInt(R.styleable.CardsView_visibleViewsCount, mVisibleViewsCount);
+
+            int margin = (int) attrs.getDimension(R.styleable.CardsView_margin, 0);
+
+            if (margin == 0) {
+                mMarginTop = (int) attrs.getDimension(R.styleable.CardsView_marginTop, res.getDimension(R.dimen.default_margin));
+                mMarginLeft = (int) attrs.getDimension(R.styleable.CardsView_marginLeft, res.getDimension(R.dimen.default_margin));
+                mMarginRight = (int) attrs.getDimension(R.styleable.CardsView_marginRight, res.getDimension(R.dimen.default_margin));
+                mMarginBottom = (int) attrs.getDimension(R.styleable.CardsView_marginBottom, res.getDimension(R.dimen.default_margin));
+            } else {
+                mMarginTop = mMarginLeft = mMarginRight = mMarginBottom = margin;
+            }
+
+            mMarginStep = (int) attrs.getDimension(R.styleable.CardsView_marginStep, res.getDimension(R.dimen.default_margin));
+
+            mVisibleViewsCount = attrs.getInt(R.styleable.CardsView_visibleViewsCount, res.getInteger(R.integer.default_visible_views_count));
         } finally {
             attrs.recycle();
         }
@@ -73,14 +86,16 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         }
     }
 
+
+    public void setScrollableParent(ViewParent scrollableParent) {
+        mDefaultOnTouchListener.setScrollableParent(scrollableParent);
+    }
+
     public ContentAdapter getAdapter() {
         return mAdapter;
     }
 
     public void reload() {
-
-        if (mDefaultOnTouchListener == null)
-            mDefaultOnTouchListener = new OnTouchCardListener(this);
 
         int count = mAdapter.getCount();
         for (int i = 0; i < count; i++) {
@@ -106,20 +121,17 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     }
 
     private void initView(SwipeableCard view, int position, int translationZ) {
-        float topMargin, sideMargin;
-
-        topMargin = mTopMargin * (position + 1);
-        sideMargin = mMarginStep * (position + 1);
 
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        lp.setMargins((int) sideMargin, (int) topMargin, (int) sideMargin, 0);
+        lp.setMargins(mMarginLeft * (position + 1), mMarginTop * (position + 1), mMarginRight * (position + 1), mMarginBottom * (position + 1));
 
         view.setLayoutParams(lp);
-        view.setClipRect(position > 0 ? (int) mTopMargin : 0);
+        view.setClipRect(position > 0 ? mMarginTop : 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             view.setTranslationZ(translationZ);
         }
+
         view.setTag(position);
         view.setVisibility(VISIBLE);
     }
@@ -144,6 +156,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         SwipeableCard view;
         int starPosition = count - 2;   // because (count - 1) is top card.
 
+        Resources res = getResources();
         for (int i = starPosition; i > count - (mVisibleViewsCount + 1); i--) {
             if (i >= 0) {
                 view = (SwipeableCard) getChildAt(i);
@@ -154,8 +167,8 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
                     view.setOnTouchCardListener(mDefaultOnTouchListener);
                 }
 
-                Animation anim = new ResizeAnimation(view, mMarginStep, mTopMargin);
-                anim.setDuration(mAnimationDuraion);
+                Animation anim = new ResizeAnimation(view, mMarginStep, mMarginTop);
+                anim.setDuration(res.getInteger(android.R.integer.config_mediumAnimTime));
                 view.startAnimation(anim);
             }
         }

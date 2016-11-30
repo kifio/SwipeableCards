@@ -19,7 +19,6 @@
             app:marginStep="4dp"
             app:order="natural"
             app:infinite="true"
-            app:topCardMargin="16dp"
             app:visibleViewsCount="4" />
 
 
@@ -29,7 +28,6 @@
             android:layout_height="match_parent"
             app:marginStep="8dp"
             app:order="natural"
-            app:topCardMargin="16dp"
             app:visibleViewsCount="5" />
 
         <com.cards.kifio.swipeablecards.CardsView
@@ -38,7 +36,6 @@
             android:layout_height="match_parent"
             app:marginStep="0dp"
             app:order="natural"
-            app:topCardMargin="16dp"
             app:visibleViewsCount="3" />
 
         <com.cards.kifio.swipeablecards.CardsView
@@ -47,7 +44,6 @@
             android:layout_height="match_parent"
             app:marginStep="16dp"
             app:order="natural"
-            app:topCardMargin="16dp"
             app:visibleViewsCount="22" />
 
 

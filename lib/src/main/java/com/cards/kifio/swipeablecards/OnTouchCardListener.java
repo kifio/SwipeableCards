@@ -17,15 +17,9 @@ public class OnTouchCardListener implements View.OnTouchListener {
     private CardsView mCardsView;
     private ViewParent mScrollableParent;
 
-    public OnTouchCardListener(CardsView view, ViewParent scrollableParent) {
-        mCardsView = view;
-        mScrollableParent = scrollableParent;
-    }
-
     OnTouchCardListener(CardsView view) {
         mCardsView = view;
     }
-
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -85,4 +79,7 @@ public class OnTouchCardListener implements View.OnTouchListener {
         }
     }
 
+    void setScrollableParent(ViewParent scrollableParent) {
+        mScrollableParent = scrollableParent;
+    }
 }

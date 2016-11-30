@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CardsView">
-        <attr name="topCardMargin" format="dimension"/>
+
+        <attr name="marginTop" format="dimension"/>
+        <attr name="marginLeft" format="dimension"/>
+        <attr name="marginRight" format="dimension"/>
+        <attr name="marginBottom" format="dimension"/>
+
+        <attr name="margin" format="dimension"/>
+
         <attr name="marginStep" format="dimension"/>
+
         <attr name="visibleViewsCount" format="integer" />
 
         <!-- v 0.2 -->
