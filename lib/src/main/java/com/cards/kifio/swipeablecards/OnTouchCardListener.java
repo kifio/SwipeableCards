@@ -1,5 +1,6 @@
 package com.cards.kifio.swipeablecards;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
@@ -42,7 +43,7 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
                 mClick = true;
 
-                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > mCardsView.mSwipeWidth) {
+                if (Math.abs(dx) > Math.abs(dy)) {
                     mClick = false;
 
                     SwipeableCard card = recursiveCardSearch(v);
@@ -52,9 +53,9 @@ public class OnTouchCardListener implements View.OnTouchListener {
                     }
 
                     if (dx < -1 && !mCardsView.mAnimLock) {
-                        mCardsView.handleSwipe(card, R.anim.slide_out_left);
+                        mCardsView.onSwipe(card, R.anim.slide_out_left);
                     } else if (dx > 1 && !mCardsView.mAnimLock) {
-                        mCardsView.handleSwipe(card, R.anim.slide_out_right);
+                        mCardsView.onSwipe(card, R.anim.slide_out_right);
                     }
                 }
                 break;
@@ -71,6 +72,11 @@ public class OnTouchCardListener implements View.OnTouchListener {
         return true;
     }
 
+    /**
+     * Recursive search ViewParent which is instance of SwipeableCard.
+     * @param view child of SwipeableCard.
+     * @return SwipeableCard instance.
+     */
     private SwipeableCard recursiveCardSearch(View view) {
         if (view instanceof SwipeableCard) {
             return (SwipeableCard) view;

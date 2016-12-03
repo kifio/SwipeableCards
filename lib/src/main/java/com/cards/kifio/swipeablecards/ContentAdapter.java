@@ -23,14 +23,6 @@ public abstract class ContentAdapter<T> {
         mData.add(item);
     }
 
-    public void remove(T item) {
-        mData.remove(item);
-    }
-
-    public void add(int pos) {
-        mData.remove(pos);
-    }
-
     public int getCount() {
         return mData.size();
     }

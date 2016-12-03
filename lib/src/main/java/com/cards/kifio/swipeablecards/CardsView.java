@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.animation.Animation;
@@ -20,63 +19,31 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
     private static final String TAG = "kifio-CardsView";
 
-    private int mMarginTop;
-    private int mMarginLeft;
-    private int mMarginRight;
-    private int mMarginBottom;
-
-    private int mMarginStep;
+    private int mMarginHorizontalStep;
+    private int mMarginVerticalStep;
     private int mVisibleViewsCount;
 
-    private Activity mContext;
     private ContentAdapter mAdapter;
     private OnTouchCardListener mDefaultOnTouchListener = new OnTouchCardListener(this);
 
-    @Override
-    protected int computeHorizontalScrollExtent() {
-        return super.computeHorizontalScrollExtent();
-    }
-
-    public int mSwipeWidth;
     public boolean mAnimLock = false;
 
     public CardsView(Context context) {
         super(context);
-        mContext = (Activity) context;
-        setDefaultSwipeWidth();
     }
 
     public CardsView(Context context, AttributeSet attrSet) {
         super(context, attrSet);
         TypedArray attrs = context.getTheme().obtainStyledAttributes(attrSet, R.styleable.CardsView, 0, 0);
         Resources res = getResources();
-        mContext = (Activity) context;
 
         try {
-
-            int margin = (int) attrs.getDimension(R.styleable.CardsView_margin, 0);
-
-            if (margin == 0) {
-                mMarginTop = (int) attrs.getDimension(R.styleable.CardsView_marginTop, res.getDimension(R.dimen.default_margin));
-                mMarginLeft = (int) attrs.getDimension(R.styleable.CardsView_marginLeft, res.getDimension(R.dimen.default_margin));
-                mMarginRight = (int) attrs.getDimension(R.styleable.CardsView_marginRight, res.getDimension(R.dimen.default_margin));
-                mMarginBottom = (int) attrs.getDimension(R.styleable.CardsView_marginBottom, res.getDimension(R.dimen.default_margin));
-            } else {
-                mMarginTop = mMarginLeft = mMarginRight = mMarginBottom = margin;
-            }
-
-            mMarginStep = (int) attrs.getDimension(R.styleable.CardsView_marginStep, res.getDimension(R.dimen.default_margin));
-
+            mMarginHorizontalStep = (int) attrs.getDimension(R.styleable.CardsView_marginHorizontalStep, res.getDimension(R.dimen.default_margin));
+            mMarginVerticalStep = (int) attrs.getDimension(R.styleable.CardsView_marginVerticalStep, res.getDimension(R.dimen.default_margin));
             mVisibleViewsCount = attrs.getInt(R.styleable.CardsView_visibleViewsCount, res.getInteger(R.integer.default_visible_views_count));
         } finally {
             attrs.recycle();
         }
-    }
-
-    private void setDefaultSwipeWidth() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        mContext.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        mSwipeWidth = (metrics.widthPixels / 100) * 5;
     }
 
     public void setAdapter(ContentAdapter adapter) {
@@ -86,13 +53,17 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         }
     }
 
-
-    public void setScrollableParent(ViewParent scrollableParent) {
-        mDefaultOnTouchListener.setScrollableParent(scrollableParent);
-    }
-
     public ContentAdapter getAdapter() {
         return mAdapter;
+    }
+
+    /**
+     * If CardsView is child of ScrollView or NestedScrollView, to avoid scroll events when user swipe cards, set reference on ScrollView.
+     *
+     * @param scrollableParent ScrollView or NestedScrollView instance in view hierarchy.
+     */
+    public void setScrollableParent(ViewParent scrollableParent) {
+        mDefaultOnTouchListener.setScrollableParent(scrollableParent);
     }
 
     public void reload() {
@@ -122,11 +93,15 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
     private void initView(SwipeableCard view, int position, int translationZ) {
 
-        LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        lp.setMargins(mMarginLeft * (position + 1), mMarginTop * (position + 1), mMarginRight * (position + 1), mMarginBottom * (position + 1));
+        int nextPos = (position + 1);
 
+        LayoutParams lp = (LayoutParams) view.getLayoutParams();
+        lp.setMargins(mMarginHorizontalStep * nextPos, mMarginVerticalStep * nextPos,
+                mMarginHorizontalStep * nextPos, mMarginVerticalStep * nextPos);
         view.setLayoutParams(lp);
-        view.setClipRect(position > 0 ? mMarginTop : 0);
+
+
+        view.setClipRect(position > 0 ? mMarginHorizontalStep : 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             view.setTranslationZ(translationZ);
@@ -136,7 +111,10 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         view.setVisibility(VISIBLE);
     }
 
-    private void startAnimation(SwipeableCard topView, int animId) {
+    /**
+     * Logic of animations. Swipe top card, resize rest cards, set visibilities of content and invisible cards.
+     */
+    public void onSwipe(SwipeableCard topView, int animId) {
         mAnimLock = true;
 
         int count = getChildCount();
@@ -167,15 +145,11 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
                     view.setOnTouchCardListener(mDefaultOnTouchListener);
                 }
 
-                Animation anim = new ResizeAnimation(view, mMarginStep, mMarginTop);
+                Animation anim = new ResizeAnimation(view, mMarginHorizontalStep, mMarginVerticalStep);
                 anim.setDuration(res.getInteger(android.R.integer.config_mediumAnimTime));
                 view.startAnimation(anim);
             }
         }
-    }
-
-    public void handleSwipe(SwipeableCard v, int animationId) {
-        startAnimation(v, animationId);
     }
 
     @Override
