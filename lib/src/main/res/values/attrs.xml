@@ -5,6 +5,13 @@
         <attr name="marginHorizontalStep" format="dimension"/>
         <attr name="marginVerticalStep" format="dimension"/>
 
+        <attr name="marginLeft" format="dimension"/>
+        <attr name="marginRight" format="dimension"/>
+        <attr name="marginTop" format="dimension"/>
+        <attr name="marginBottom" format="dimension"/>
+        <attr name="margin" format="dimension"/>
+
+
         <attr name="visibleViewsCount" format="integer" />
 
         <!-- v 0.2 -->

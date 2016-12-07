@@ -19,9 +19,28 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
     private static final String TAG = "kifio-CardsView";
 
+    /**
+     *  Diff between y position of  2 neighboring cards.
+     */
     private int mMarginHorizontalStep;
+
+    /**
+     * Diff between width of 2 neighboring cards.
+     */
     private int mMarginVerticalStep;
+
+    /**
+     * Count of visible cards. If this value will be more then count of cards in adapter, its will be set to count of cards in adapter.
+     */
     private int mVisibleViewsCount;
+
+    /**
+     * Default margins of CardView. If you will use default android:margins, animations will be look cropped.
+     */
+    private int mMarginLeft;
+    private int mMarginRight;
+    private int mMarginTop;
+    private int mMarginBottom;
 
     private ContentAdapter mAdapter;
     private OnTouchCardListener mDefaultOnTouchListener = new OnTouchCardListener(this);
@@ -41,6 +60,19 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
             mMarginHorizontalStep = (int) attrs.getDimension(R.styleable.CardsView_marginHorizontalStep, res.getDimension(R.dimen.default_margin));
             mMarginVerticalStep = (int) attrs.getDimension(R.styleable.CardsView_marginVerticalStep, res.getDimension(R.dimen.default_margin));
             mVisibleViewsCount = attrs.getInt(R.styleable.CardsView_visibleViewsCount, res.getInteger(R.integer.default_visible_views_count));
+
+            int margin = (int) attrs.getDimension(R.styleable.CardsView_margin, 0);
+
+            if (margin == 0) {
+                mMarginLeft = (int) attrs.getDimension(R.styleable.CardsView_marginVerticalStep, 0);
+                mMarginRight = (int) attrs.getDimension(R.styleable.CardsView_marginVerticalStep, 0);
+                mMarginTop = (int) attrs.getDimension(R.styleable.CardsView_marginVerticalStep, 0);
+                mMarginBottom = (int) attrs.getDimension(R.styleable.CardsView_marginVerticalStep, 0);
+            } else {
+                mMarginLeft = mMarginTop = mMarginRight = mMarginBottom = margin;
+            }
+
+
         } finally {
             attrs.recycle();
         }
@@ -96,8 +128,8 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         int nextPos = (position + 1);
 
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
-        lp.setMargins(mMarginHorizontalStep * nextPos, mMarginVerticalStep * nextPos,
-                mMarginHorizontalStep * nextPos, mMarginVerticalStep * nextPos);
+        lp.setMargins(mMarginLeft + (mMarginHorizontalStep * nextPos), mMarginTop + (mMarginVerticalStep * nextPos),
+                mMarginRight + (mMarginHorizontalStep * nextPos), mMarginBottom + (mMarginVerticalStep * nextPos));
         view.setLayoutParams(lp);
 
 
