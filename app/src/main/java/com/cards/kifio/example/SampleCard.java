@@ -13,13 +13,13 @@ import com.cards.kifio.swipeablecards.SwipeableCard;
  * Created by kifio on 11/4/16.
  */
 
-public class TextCard extends SwipeableCard implements View.OnClickListener {
+public class SampleCard extends SwipeableCard implements View.OnClickListener {
 
-    public TextCard(Context context) {
+    public SampleCard(Context context) {
         super(context);
     }
 
-    public TextCard(Context context, AttributeSet attrs) {
+    public SampleCard(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

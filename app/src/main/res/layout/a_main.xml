@@ -13,36 +13,10 @@
         android:layout_height="wrap_content">
 
         <com.cards.kifio.swipeablecards.CardsView
-            android:id="@+id/cardsView0"
+            android:id="@+id/cardsView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:marginHorizontalStep="4dp"
-            app:marginVerticalStep="16dp"
             app:visibleViewsCount="4" />
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:id="@+id/cardsView1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:marginHorizontalStep="8dp"
-            app:visibleViewsCount="5" />
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:id="@+id/cardsView2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:marginHorizontalStep="0dp"
-            app:margin="16dp"
-            app:visibleViewsCount="3" />
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:id="@+id/cardsView3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:marginHorizontalStep="16dp"
-            app:visibleViewsCount="22" />
-
-
 
     </LinearLayout>
 

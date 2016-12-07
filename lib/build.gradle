@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 25
@@ -8,6 +9,16 @@ android {
         minSdkVersion 14
         targetSdkVersion 25
     }
+}
+
+publish {
+    groupId = 'com.github.kifio'
+    artifactId = 'swipeablecards'
+    publishVersion = '0.1'
+    desc = 'Simple animated swipeable cards.'
+    licences = ['MIT']
+    uploadName='SwipeableCards'
+    website = 'https://github.com/kifio/SwipeableCards'
 }
 
 dependencies {

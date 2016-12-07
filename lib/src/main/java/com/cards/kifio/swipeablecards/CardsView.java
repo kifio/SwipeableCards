@@ -20,12 +20,12 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     private static final String TAG = "kifio-CardsView";
 
     /**
-     *  Diff between y position of  2 neighboring cards.
+     * Horizontal space between edges of 2 neighboring cards.
      */
     private int mMarginHorizontalStep;
 
     /**
-     * Diff between width of 2 neighboring cards.
+     * Diff between y position of 2 neighboring cards.
      */
     private int mMarginVerticalStep;
 

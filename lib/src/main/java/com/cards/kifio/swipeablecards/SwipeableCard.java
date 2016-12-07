@@ -48,7 +48,7 @@ public class SwipeableCard extends CardView {
     }
 
     /**
-     * Set {@link OnTouchCardListener} to clickable views in SwipeableCard, for the treatment of strokes and swipe.
+     * Set {@link OnTouchCardListener} to clickable views in SwipeableCard, for handling swipes and clicks.
      */
     public void setOnTouchCardListener(OnTouchCardListener listener) {
         mListener = listener;
