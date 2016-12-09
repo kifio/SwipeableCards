@@ -4,7 +4,17 @@
 * Easy interaction with Scrollview.
 * Animations for resizing cards.
 
+![](http://imgur.com/a/ZlEib)
+
 **QuickStart**
+
+Add dependency in your build.gradle
+
+```groovy
+dependencies {
+    compile 'com.github.kifio:swipeablecards:0.1'
+}
+```
 
 For start using swipeable cards, add CardsView to your layout:
 
