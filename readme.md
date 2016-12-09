@@ -4,7 +4,7 @@
 * Easy interaction with Scrollview.
 * Animations for resizing cards.
 
-![](http://imgur.com/a/ZlEib)
+![](https://i.imgur.com/KEv6lSb.gif)
 
 **QuickStart**
 
