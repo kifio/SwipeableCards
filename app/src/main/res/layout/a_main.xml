@@ -16,7 +16,8 @@
             android:id="@+id/cardsView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:visibleViewsCount="4" />
+            app:visibleViewsCount="4"
+            app:infinite="true"/>
 
     </LinearLayout>
 
