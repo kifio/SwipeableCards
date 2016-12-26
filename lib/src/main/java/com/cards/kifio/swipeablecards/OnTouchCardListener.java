@@ -2,7 +2,9 @@ package com.cards.kifio.swipeablecards;
 
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewParent;
 
 /**
@@ -13,76 +15,73 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
     private static final String TAG = "OnTouchCardListener";
 
-    private float mInitialTouchX, mInitialTouchY;
-    private boolean mClick = false;
     private CardsView mCardsView;
     private ViewParent mScrollableParent;
+    private VelocityTracker mVelocityTracker = null;
+    private int mMinimumFlingVelocity, mMaximumFlingVelocity;
 
     OnTouchCardListener(CardsView view) {
         mCardsView = view;
+        ViewConfiguration viewConfiguration = ViewConfiguration.get(view.getContext());
+        mMinimumFlingVelocity = viewConfiguration.getScaledMinimumFlingVelocity();
+        mMaximumFlingVelocity = viewConfiguration.getScaledMaximumFlingVelocity();
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+
+        int index = event.getActionIndex();
+        int pointerId = event.getPointerId(index);
+
+
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN:
-                mClick = true;
-                v.clearAnimation();
-                mInitialTouchX = event.getX();
-                mInitialTouchY = event.getY();
+
+                if(mVelocityTracker == null) {
+                    mVelocityTracker = VelocityTracker.obtain();
+                } else {
+                    mVelocityTracker.clear();
+                }
+
                 break;
 
             case MotionEvent.ACTION_MOVE:
 
-                float xMove = event.getX();
-                float yMove = event.getY();
+                // TODO: If moveable mode enabled, set X position in thsis case.
 
-                float dx = xMove - mInitialTouchX;
-                float dy = yMove - mInitialTouchY;
+                mVelocityTracker.addMovement(event);
 
-                mClick = true;
+                break;
 
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    mClick = false;
+            case MotionEvent.ACTION_UP:
 
-//                    SwipeableCard card = recursiveCardSearch(v);
+                mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
+
+                final float velocityX = mVelocityTracker.getXVelocity(pointerId);
+
+                if ((Math.abs(velocityX) > mMinimumFlingVelocity)){
 
                     if (mScrollableParent != null) {
                         mScrollableParent.requestDisallowInterceptTouchEvent(true);
                     }
 
-                    if (dx < -1 && !mCardsView.mAnimLock) {
+                    if (velocityX < -1 && !mCardsView.mAnimLock) {
                         mCardsView.onSwipe(R.anim.slide_out_left);
-                    } else if (dx > 1 && !mCardsView.mAnimLock) {
+                    } else if (velocityX > 1 && !mCardsView.mAnimLock) {
                         mCardsView.onSwipe(R.anim.slide_out_right);
                     }
-                }
-                break;
 
-            case MotionEvent.ACTION_UP:
-                if (mClick) {
+                } else {
                     v.performClick();
                 }
+
                 return false;
 
             default:
                 return false;
         }
         return true;
-    }
-
-    /**
-     * Recursive search ViewParent which is instance of SwipeableCard.
-     * @param view child of SwipeableCard.
-     * @return SwipeableCard instance.
-     */
-    private SwipeableCard recursiveCardSearch(View view) {
-        if (view instanceof SwipeableCard) {
-            return (SwipeableCard) view;
-        } else {
-            return recursiveCardSearch((View) view.getParent());
-        }
     }
 
     void setScrollableParent(ViewParent scrollableParent) {
