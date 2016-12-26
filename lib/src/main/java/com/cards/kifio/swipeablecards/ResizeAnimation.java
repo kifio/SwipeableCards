@@ -38,8 +38,8 @@ public class ResizeAnimation extends Animation {
 
         mLp.leftMargin = (int) (mInitialMargin - leftMargin);
         mLp.rightMargin = (int) (mInitialMargin - leftMargin);
+        mLp.topMargin = (int) (mInitialMargin - dy);
 
-        mView.setY(mInitialY - dy);
         mView.requestLayout();
     }
 

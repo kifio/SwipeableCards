@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     static class Adapter extends ContentAdapter<String> {
 
-        private static final int COUNT = 5;
+        private static final int COUNT = 15;
 
         Adapter() {
             super(new ArrayList<String>(COUNT));

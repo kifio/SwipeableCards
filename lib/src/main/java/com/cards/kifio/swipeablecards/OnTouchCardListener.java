@@ -46,16 +46,16 @@ public class OnTouchCardListener implements View.OnTouchListener {
                 if (Math.abs(dx) > Math.abs(dy)) {
                     mClick = false;
 
-                    SwipeableCard card = recursiveCardSearch(v);
+//                    SwipeableCard card = recursiveCardSearch(v);
 
                     if (mScrollableParent != null) {
                         mScrollableParent.requestDisallowInterceptTouchEvent(true);
                     }
 
                     if (dx < -1 && !mCardsView.mAnimLock) {
-                        mCardsView.onSwipe(card, R.anim.slide_out_left);
+                        mCardsView.onSwipe(R.anim.slide_out_left);
                     } else if (dx > 1 && !mCardsView.mAnimLock) {
-                        mCardsView.onSwipe(card, R.anim.slide_out_right);
+                        mCardsView.onSwipe(R.anim.slide_out_right);
                     }
                 }
                 break;
