@@ -4,22 +4,16 @@
 
         <attr name="marginHorizontalStep" format="dimension"/>
         <attr name="marginVerticalStep" format="dimension"/>
-
         <attr name="marginLeft" format="dimension"/>
         <attr name="marginRight" format="dimension"/>
         <attr name="marginTop" format="dimension"/>
         <attr name="marginBottom" format="dimension"/>
         <attr name="margin" format="dimension"/>
-
-
         <attr name="visibleViewsCount" format="integer" />
-
-        <!-- v 0.2 -->
         <attr name="infinite" format="boolean" />
 
-        <!-- v 0.3 -->
         <attr name="order" format="enum">
-            <enum name="natural" value="0"/>
+            <enum name="straight" value="0"/>
             <enum name="reverse" value="1"/>
         </attr>
 

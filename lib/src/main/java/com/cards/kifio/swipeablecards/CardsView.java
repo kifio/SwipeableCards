@@ -30,10 +30,22 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     private int mMarginVerticalStep;
 
     /**
-     * Immutable count of visible cards. If this value will be more then count of cards in adapter, it's will be set to count of cards in adapter.
+     * Mutable count of visible cards. If this value will be more then count of cards in adapter, it's will be set to count of cards in adapter.
+     */
+    private int mCurrentVisibleCardsCount;
+
+    /**
+     * Immutable count of visible cards. It's used for reloading cards, when mCurrentVisibleCardsCount is 0.
      */
     private int mVisibleCardsCount;
 
+    /**
+     * Order of items in CardsView. Direct order is from first to last, Reverse is from last item to first.
+     */
+    public static final int DIRECT_ORDER = 0;
+    public static final int REVERSE_ORDER = 1;
+
+    private int mOrder;
 
     /**
      * Default margins of CardView. If you will use default android:margins, animations will be look cropped.
@@ -44,9 +56,15 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     private int mMarginBottom;
 
     /**
-     * Count of swiped cards.
+     * Count of swiped cards. If infinite mode disabled, after last card swipes, this fiels reinitialized with 0 value.
      */
-    private int mSwipedCardsCount;
+    private int mCurrentSwipedCardsCount;
+
+    /**
+     * Count of swipes. This field used for setting translationZ for new cards, when infinite mode enabled. It's only increments, never reinitialized;
+     */
+    private int mSwipesCount;
+
 
     /**
      * Flag for enabling infinite cards mode. In this mode, after initialization last item from adapter, first item from adapter will be initialized.
@@ -60,7 +78,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
     public CardsView(Context context) {
         super(context);
-        mStackCardsCount = mVisibleCardsCount = getResources().getInteger(R.integer.default_visible_views_count);
+        mVisibleCardsCount = mCurrentVisibleCardsCount = getResources().getInteger(R.integer.default_visible_views_count);
     }
 
     public CardsView(Context context, AttributeSet attrSet) {
@@ -74,7 +92,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
             mMarginVerticalStep = (int) attrs.getDimension(R.styleable.CardsView_marginVerticalStep, res.getDimension(R.dimen.default_margin));
 
-            mStackCardsCount = mVisibleCardsCount = attrs.getInt(R.styleable.CardsView_visibleViewsCount, res.getInteger(R.integer.default_visible_views_count));
+            mVisibleCardsCount = mCurrentVisibleCardsCount = attrs.getInt(R.styleable.CardsView_visibleViewsCount, res.getInteger(R.integer.default_visible_views_count));
 
             int margin = (int) attrs.getDimension(R.styleable.CardsView_margin, 0);
 
@@ -93,6 +111,8 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
             }
 
             mInfinite = attrs.getBoolean(R.styleable.CardsView_infinite, false);
+
+            mOrder = attrs.getInt(R.styleable.CardsView_order, DIRECT_ORDER);
 
         } finally {
             attrs.recycle();
@@ -116,16 +136,14 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         mDefaultOnTouchListener.setScrollableParent(scrollableParent);
     }
 
-    private int mStackCardsCount;
-
     public void reload() {
-        mSwipedCardsCount = 0;
+        mCurrentSwipedCardsCount = 0;
         if (mAdapter != null) {
 
-            if (mVisibleCardsCount > mAdapter.getCount()) {
-                mStackCardsCount = mVisibleCardsCount = mAdapter.getCount();
-            } else if (mVisibleCardsCount == 0) {
-                mVisibleCardsCount = mStackCardsCount;
+            if (mCurrentVisibleCardsCount > mAdapter.getCount()) {
+                mVisibleCardsCount = mCurrentVisibleCardsCount = mAdapter.getCount();
+            } else if (mCurrentVisibleCardsCount == 0) {
+                mCurrentVisibleCardsCount = mVisibleCardsCount;
             }
 
         } else {
@@ -134,72 +152,84 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
         }
 
-        int count = mAdapter.getCount();
-        for (int i = 0; i < mVisibleCardsCount; i++) {
-            addView(i, count);
-        }
+        for (int i = 0; i < mCurrentVisibleCardsCount; i++) addView(i);
     }
 
-    private void addView(int index, int count) {
+    private void addView(int index) {
+
         SwipeableCard child = (SwipeableCard) mAdapter.getView(this);
+
         addView(child, 0);
 
-        int translationZ = count - index - 1;
-        initView(child, index, translationZ);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            for (int i = getChildCount() - 1; i > 0; i--) {
+                getChildAt(i).setTranslationZ(i);
+            }
+        }
+
+        initView(child, index);
+
         if (index == 0) {
-            mAdapter.initCard(child, index);
+
+            initCard(child, index);
+
             if (child.getOnTouchCardListener() == null) {
                 child.setOnTouchCardListener(mDefaultOnTouchListener);
             }
         }
-
     }
 
-    private void initView(SwipeableCard view, int position, int translationZ) {
+    private void initView(SwipeableCard view, int position) {
 
         int nextPos = (position + 1);
 
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
         lp.setMargins(mMarginLeft + (mMarginHorizontalStep * nextPos), mMarginTop + (mMarginVerticalStep * nextPos),
                 mMarginRight + (mMarginHorizontalStep * nextPos), mMarginBottom + (mMarginVerticalStep * nextPos));
-        view.setLayoutParams(lp);
-
 
         view.setClipRect(position > 0 ? mMarginHorizontalStep : 0);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.setTranslationZ(translationZ);
-        }
 
         view.setTag(position);
         view.setVisibility(VISIBLE);
     }
 
-    /**
-     * Logic of animations. Swipe top card, resize rest cards, set visibilities of content and invisible cards.
-     */
+    private void initCard(SwipeableCard card, int position) {
+        mAdapter.initCard(card, isReverseOrder() ? mAdapter.getCount() - position : position);
+    }
+
+    private boolean isReverseOrder() {
+        return mOrder == REVERSE_ORDER;
+    }
+
     void onSwipe(int animId) {
+
         mAnimLock = true;
 
         int count = mAdapter.getCount();
 
-        if (mInfinite || mVisibleCardsCount + mSwipedCardsCount < count) {
-            addView(mVisibleCardsCount, count - mSwipedCardsCount);
+        if (mInfinite || mCurrentVisibleCardsCount + mCurrentSwipedCardsCount < count) {
+            addView(mCurrentVisibleCardsCount);
         } else {
-            mVisibleCardsCount--;
+            mCurrentVisibleCardsCount--;
         }
 
-        SwipeableCard topView = (SwipeableCard) getChildAt(mVisibleCardsCount);
+        SwipeableCard topView = (SwipeableCard) getChildAt(mCurrentVisibleCardsCount);
 
         // Start animation for top card.
         Animation swipeAnimation = AnimationUtils.loadAnimation(getContext(), animId);
         swipeAnimation.setAnimationListener(this);
         topView.startAnimation(swipeAnimation);
 
-        mSwipedCardsCount = (mInfinite && mSwipedCardsCount + 1 == count) ? 0 : mSwipedCardsCount + 1;
+        mCurrentSwipedCardsCount = (mInfinite && mCurrentSwipedCardsCount + 1 == count) ? 0 : mCurrentSwipedCardsCount + 1;
 
-        // Third, we move and resize others cards.
-        int starPosition = mVisibleCardsCount - 1;   // because (count - 1) is top card.
+        mSwipesCount++;
+
+        resizeAndReplaceCards();
+    }
+
+    private void resizeAndReplaceCards() {
+
+        int starPosition = mCurrentVisibleCardsCount - 1;
 
         Resources res = getResources();
         for (int i = starPosition; i >= 0; i--) {
@@ -207,7 +237,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
             if (i == starPosition) {
                 view.setClipRect(0);    // draw all nested views of card.
-                mAdapter.initCard(view, mSwipedCardsCount);    // set values for nested views.
+                initCard(view, mCurrentSwipedCardsCount);    // set values for nested views.
                 view.setOnTouchCardListener(mDefaultOnTouchListener);
             }
 
@@ -224,7 +254,6 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         View view = getChildAt(pos);
         view.setOnTouchListener(null);
         removeView(view);
-        Log.d(TAG, "onAnimationEnd: " + pos);
         if (pos == 0) reload();
     }
 
