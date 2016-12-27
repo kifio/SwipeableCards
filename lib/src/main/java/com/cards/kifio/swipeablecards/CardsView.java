@@ -4,13 +4,19 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.support.annotation.IntDef;
+import android.support.annotation.MainThread;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
 import android.widget.RelativeLayout;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by kifio on 7/6/16.
@@ -25,7 +31,7 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     private int mMarginHorizontalStep;
 
     /**
-     * Diff between y position of 2 neighboring cards.
+     * Diff between top margin of 2 neighboring cards.
      */
     private int mMarginVerticalStep;
 
@@ -61,17 +67,32 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     private int mCurrentSwipedCardsCount;
 
     /**
-     * Count of swipes. This field used for setting translationZ for new cards, when infinite mode enabled. It's only increments, never reinitialized;
-     */
-    private int mSwipesCount;
-
-
-    /**
      * Flag for enabling infinite cards mode. In this mode, after initialization last item from adapter, first item from adapter will be initialized.
      */
     private boolean mInfinite;
 
+    /**
+     * Flag for enabling movable mode. In this mode, OnTouchCardListener will handle action ACTION_MOVE and change position of top card.
+     */
+    boolean mMovable;
+
+    static final int LEFT_SWIPE = 0;
+    static final int RIGHT_SWIPE = 1;
+    static final int MOVE_TO_INITIAL = 2;
+
+    /**
+     * Types of animations for moving top card.
+     */
+    @IntDef({LEFT_SWIPE, RIGHT_SWIPE, MOVE_TO_INITIAL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AnimationType {}
+
+    @AnimationType int mAnimation = MOVE_TO_INITIAL;
+
+    private float mSwipeEdge;
+
     private ContentAdapter mAdapter;
+
     private OnTouchCardListener mDefaultOnTouchListener = new OnTouchCardListener(this);
 
     public boolean mAnimLock = false;
@@ -112,11 +133,19 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
             mInfinite = attrs.getBoolean(R.styleable.CardsView_infinite, false);
 
+            mMovable = attrs.getBoolean(R.styleable.CardsView_movable, false);
+
             mOrder = attrs.getInt(R.styleable.CardsView_order, DIRECT_ORDER);
 
         } finally {
             attrs.recycle();
         }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        mSwipeEdge = 2 * (getWidth() / 5);
     }
 
     public void setAdapter(ContentAdapter adapter) {
@@ -182,11 +211,10 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
     private void initView(SwipeableCard view, int position) {
 
         int nextPos = (position + 1);
-
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
         lp.setMargins(mMarginLeft + (mMarginHorizontalStep * nextPos), mMarginTop + (mMarginVerticalStep * nextPos),
                 mMarginRight + (mMarginHorizontalStep * nextPos), mMarginBottom + (mMarginVerticalStep * nextPos));
-
+        view.setLayoutParams(lp);
         view.setClipRect(position > 0 ? mMarginHorizontalStep : 0);
 
         view.setTag(position);
@@ -222,9 +250,63 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
         mCurrentSwipedCardsCount = (mInfinite && mCurrentSwipedCardsCount + 1 == count) ? 0 : mCurrentSwipedCardsCount + 1;
 
-        mSwipesCount++;
-
         resizeAndReplaceCards();
+    }
+
+    public void onMove(float dx, float dy) {
+
+        SwipeableCard topView = (SwipeableCard) getChildAt(mCurrentVisibleCardsCount - 1);
+
+        float newX = topView.getX() + dx;
+        float newY = topView.getY() + dy;
+
+        moveAndRotate(topView, newX, newY);
+
+        if (Math.abs(newX) > mSwipeEdge) {
+
+            if (newX > 0) {
+                mAnimation = RIGHT_SWIPE;
+            } else {
+                mAnimation = LEFT_SWIPE;
+            }
+
+        } else {
+            mAnimation = MOVE_TO_INITIAL;
+        }
+    }
+
+    private void moveAndRotate(SwipeableCard card, float newX, float newY) {
+
+        int rotation = (int) ((-15 * (newX - mMarginHorizontalStep)) / mSwipeEdge);
+
+        card.setRotation(rotation);
+        card.setX(newX);
+        card.setY(newY);
+    }
+
+    public void moveTopCardToStartPos() {
+
+        mAnimLock = true;
+
+        final SwipeableCard topView = (SwipeableCard) getChildAt(mCurrentVisibleCardsCount - 1);
+
+        final float dx = topView.getX();
+        final float dy = topView.getY();
+
+        Animation animation = new Animation() {
+
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if (interpolatedTime != 1.0) {
+                    moveAndRotate(topView, (dx * (1 - interpolatedTime)) + mMarginHorizontalStep, (dy * (1 - interpolatedTime)) + mMarginVerticalStep);
+                } else {
+                    mAnimLock = false;
+                }
+            }
+        };
+
+        animation.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+        topView.startAnimation(animation);
     }
 
     private void resizeAndReplaceCards() {

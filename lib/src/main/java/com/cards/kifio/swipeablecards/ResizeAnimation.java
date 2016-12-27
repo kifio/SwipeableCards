@@ -13,7 +13,7 @@ public class ResizeAnimation extends Animation {
 
     private static final String TAG = "RG-ResizeAnimation";
 
-    private float mInitialMargin, mMarginDiff, mInitialY, mYDiff;
+    private float mInitialMargin, mMarginDiff, mYDiff;
 
     private View mView;
     private ViewGroup.MarginLayoutParams mLp;
@@ -24,7 +24,6 @@ public class ResizeAnimation extends Animation {
         mLp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
         mInitialMargin = mLp.leftMargin;
-        mInitialY = mView.getY();
 
         mMarginDiff = marginDiff;
         mYDiff = yDiff;
@@ -41,15 +40,5 @@ public class ResizeAnimation extends Animation {
         mLp.topMargin = (int) (mInitialMargin - dy);
 
         mView.requestLayout();
-    }
-
-    @Override
-    public void initialize(int width, int height, int parentWidth, int parentHeight) {
-        super.initialize(width, height, parentWidth, parentHeight);
-    }
-
-    @Override
-    public boolean willChangeBounds() {
-        return true;
     }
 }

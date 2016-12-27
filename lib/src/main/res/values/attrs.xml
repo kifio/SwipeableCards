@@ -11,15 +11,12 @@
         <attr name="margin" format="dimension"/>
         <attr name="visibleViewsCount" format="integer" />
         <attr name="infinite" format="boolean" />
+        <attr name="movable" format="boolean" />
 
         <attr name="order" format="enum">
             <enum name="straight" value="0"/>
             <enum name="reverse" value="1"/>
         </attr>
-
-        <!-- v 0.4 -->
-        <attr name="movable" format="boolean" />
-        <attr name="swipeable" format="boolean" />
 
     </declare-styleable>
 </resources>

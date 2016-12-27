@@ -16,8 +16,10 @@
             android:id="@+id/cardsView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:splitMotionEvents="false"
             app:visibleViewsCount="4"
-            app:infinite="false"
+            app:infinite="true"
+            app:movable="true"
             app:order="reverse"/>
 
     </LinearLayout>

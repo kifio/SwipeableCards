@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
 
+import java.util.Locale;
+
 /**
  * Created by kifio on 10/29/16.
  */
@@ -19,6 +21,7 @@ public class OnTouchCardListener implements View.OnTouchListener {
     private ViewParent mScrollableParent;
     private VelocityTracker mVelocityTracker = null;
     private int mMinimumFlingVelocity, mMaximumFlingVelocity;
+    private int mInitialTouchX, mInitialTouchY;
 
     OnTouchCardListener(CardsView view) {
         mCardsView = view;
@@ -27,18 +30,27 @@ public class OnTouchCardListener implements View.OnTouchListener {
         mMaximumFlingVelocity = viewConfiguration.getScaledMaximumFlingVelocity();
     }
 
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
+        // FIXME: Fix crash on multitouch and wrong x coord detecting.
         int index = event.getActionIndex();
         int pointerId = event.getPointerId(index);
-
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN:
 
-                if(mVelocityTracker == null) {
+                Log.d(TAG, "ACTION_DOWN " + mInitialTouchX);
+
+
+                if (mCardsView.mMovable) {
+                    mInitialTouchX = (int) event.getX();
+                    mInitialTouchY = (int) event.getY();
+                }
+
+                if (mVelocityTracker == null) {
                     mVelocityTracker = VelocityTracker.obtain();
                 } else {
                     mVelocityTracker.clear();
@@ -48,32 +60,59 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
             case MotionEvent.ACTION_MOVE:
 
-                // TODO: If moveable mode enabled, set X position in thsis case.
-
-                mVelocityTracker.addMovement(event);
-
-                break;
-
-            case MotionEvent.ACTION_UP:
-
-                mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
-
-                final float velocityX = mVelocityTracker.getXVelocity(pointerId);
-
-                if ((Math.abs(velocityX) > mMinimumFlingVelocity)){
 
                     if (mScrollableParent != null) {
                         mScrollableParent.requestDisallowInterceptTouchEvent(true);
                     }
 
-                    if (velocityX < -1 && !mCardsView.mAnimLock) {
-                        mCardsView.onSwipe(R.anim.slide_out_left);
-                    } else if (velocityX > 1 && !mCardsView.mAnimLock) {
-                        mCardsView.onSwipe(R.anim.slide_out_right);
+                    if (mCardsView.mMovable) {
+
+                        float xMove = event.getX(pointerId);
+                        float yMove = event.getY(pointerId);
+
+                        Log.d(TAG, "ACTION_MOVE " + mInitialTouchX);
+
+                        float dx = xMove - mInitialTouchX;
+                        float dy = yMove - mInitialTouchY;
+
+                        mCardsView.onMove(dx, dy);
+                    } else {
+                        mVelocityTracker.addMovement(event);
                     }
 
+                break;
+
+            case MotionEvent.ACTION_UP:
+
+                Log.d(TAG, "ACTION_UP " + mInitialTouchX);
+
+                if (!mCardsView.mMovable) {
+
+                    mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
+
+                    final float velocityX = mVelocityTracker.getXVelocity(pointerId);
+
+                    if ((Math.abs(velocityX) > mMinimumFlingVelocity)) {
+
+                        if (velocityX < -1 && !mCardsView.mAnimLock) {
+                            mCardsView.onSwipe(R.anim.slide_out_left);
+                        } else if (velocityX > 1 && !mCardsView.mAnimLock) {
+                            mCardsView.onSwipe(R.anim.slide_out_right);
+                        }
+
+                    } else {
+                        v.performClick();
+                    }
                 } else {
-                    v.performClick();
+
+                    if (mCardsView.mAnimation == CardsView.LEFT_SWIPE) {
+                        mCardsView.onSwipe(R.anim.slide_out_left);
+                    } else if (mCardsView.mAnimation == CardsView.RIGHT_SWIPE) {
+                        mCardsView.onSwipe(R.anim.slide_out_right);
+                    } else {
+                        mCardsView.moveTopCardToStartPos();
+                    }
+
                 }
 
                 return false;
