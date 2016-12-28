@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.os.LocaleList;
 import android.support.annotation.IntDef;
 import android.support.annotation.MainThread;
 import android.util.AttributeSet;
@@ -17,6 +18,7 @@ import android.widget.RelativeLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Locale;
 
 /**
  * Created by kifio on 7/6/16.
@@ -76,20 +78,26 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
      */
     boolean mMovable;
 
+    /**
+     * Increasing this value can lead to errors in determining the x position of view.
+     */
+    static final int DEFAULT_DEGREES_VALUE = 15;
+
     static final int LEFT_SWIPE = 0;
     static final int RIGHT_SWIPE = 1;
     static final int MOVE_TO_INITIAL = 2;
+    static final int NO_ANIMATION = 3;
 
     /**
      * Types of animations for moving top card.
      */
-    @IntDef({LEFT_SWIPE, RIGHT_SWIPE, MOVE_TO_INITIAL})
+    @IntDef({LEFT_SWIPE, RIGHT_SWIPE, MOVE_TO_INITIAL, NO_ANIMATION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AnimationType {}
 
-    @AnimationType int mAnimation = MOVE_TO_INITIAL;
+    @AnimationType int mAnimation = NO_ANIMATION;
 
-    private float mSwipeEdge;
+    private int mSwipeEdge;
 
     private ContentAdapter mAdapter;
 
@@ -233,10 +241,12 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
 
         mAnimLock = true;
 
+        mAnimation = NO_ANIMATION;
+
         int count = mAdapter.getCount();
 
         if (mInfinite || mCurrentVisibleCardsCount + mCurrentSwipedCardsCount < count) {
-            addView(mCurrentVisibleCardsCount);
+            addView(mCurrentVisibleCardsCount - 1);
         } else {
             mCurrentVisibleCardsCount--;
         }
@@ -253,14 +263,18 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         resizeAndReplaceCards();
     }
 
-    public void onMove(float dx, float dy) {
+    public void onMove(int dx, int dy) {
+
+        mAnimation = NO_ANIMATION;
 
         SwipeableCard topView = (SwipeableCard) getChildAt(mCurrentVisibleCardsCount - 1);
 
         float newX = topView.getX() + dx;
         float newY = topView.getY() + dy;
 
-        moveAndRotate(topView, newX, newY);
+        topView.setRotation((int) ((DEFAULT_DEGREES_VALUE * (newX - dx)) / mSwipeEdge));
+        topView.setX(newX);
+        topView.setY(newY);
 
         if (Math.abs(newX) > mSwipeEdge) {
 
@@ -273,40 +287,23 @@ public class CardsView extends RelativeLayout implements Animation.AnimationList
         } else {
             mAnimation = MOVE_TO_INITIAL;
         }
-    }
 
-    private void moveAndRotate(SwipeableCard card, float newX, float newY) {
-
-        int rotation = (int) ((-15 * (newX - mMarginHorizontalStep)) / mSwipeEdge);
-
-        card.setRotation(rotation);
-        card.setX(newX);
-        card.setY(newY);
     }
 
     public void moveTopCardToStartPos() {
 
-        mAnimLock = true;
+        mAnimation = NO_ANIMATION;
 
-        final SwipeableCard topView = (SwipeableCard) getChildAt(mCurrentVisibleCardsCount - 1);
+        final SwipeableCard view = (SwipeableCard) getChildAt(mCurrentVisibleCardsCount - 1);
 
-        final float dx = topView.getX();
-        final float dy = topView.getY();
+        final int startXPos = (int) view.getX();
+        final int startYPos = (int) view.getY();
 
-        Animation animation = new Animation() {
-
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if (interpolatedTime != 1.0) {
-                    moveAndRotate(topView, (dx * (1 - interpolatedTime)) + mMarginHorizontalStep, (dy * (1 - interpolatedTime)) + mMarginVerticalStep);
-                } else {
-                    mAnimLock = false;
-                }
-            }
-        };
+        Animation animation = new MoveToStartPosAnimation(view, startXPos, startYPos,
+                mMarginHorizontalStep, mMarginVerticalStep, mSwipeEdge);
 
         animation.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-        topView.startAnimation(animation);
+        view.startAnimation(animation);
     }
 
     private void resizeAndReplaceCards() {

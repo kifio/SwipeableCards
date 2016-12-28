@@ -19,7 +19,7 @@
             android:splitMotionEvents="false"
             app:visibleViewsCount="4"
             app:infinite="true"
-            app:movable="true"
+            app:movable="false"
             app:order="reverse"/>
 
     </LinearLayout>

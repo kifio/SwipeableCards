@@ -1,5 +1,6 @@
 package com.cards.kifio.swipeablecards;
 
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -17,11 +18,15 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
     private static final String TAG = "OnTouchCardListener";
 
+    private static final int INVALIDATE_POINTER_ID = -1;
+
     private CardsView mCardsView;
     private ViewParent mScrollableParent;
     private VelocityTracker mVelocityTracker = null;
     private int mMinimumFlingVelocity, mMaximumFlingVelocity;
-    private int mInitialTouchX, mInitialTouchY;
+    private float mInitialTouchX, mInitialTouchY;
+    private int mActivePointerId = INVALIDATE_POINTER_ID;
+    private boolean mClick = false;
 
     OnTouchCardListener(CardsView view) {
         mCardsView = view;
@@ -30,25 +35,25 @@ public class OnTouchCardListener implements View.OnTouchListener {
         mMaximumFlingVelocity = viewConfiguration.getScaledMaximumFlingVelocity();
     }
 
-
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        // FIXME: Fix crash on multitouch and wrong x coord detecting.
-        int index = event.getActionIndex();
-        int pointerId = event.getPointerId(index);
+        final int action = MotionEventCompat.getActionMasked(event);
 
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+        switch (action) {
 
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_DOWN: {
 
-                Log.d(TAG, "ACTION_DOWN " + mInitialTouchX);
+                mClick = true;
 
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                final float x = MotionEventCompat.getX(event, pointerIndex);
+                final float y = MotionEventCompat.getY(event, pointerIndex);
 
-                if (mCardsView.mMovable) {
-                    mInitialTouchX = (int) event.getX();
-                    mInitialTouchY = (int) event.getY();
-                }
+                mInitialTouchX = x;
+                mInitialTouchY = y;
+
+                mActivePointerId = MotionEventCompat.getPointerId(event, 0);
 
                 if (mVelocityTracker == null) {
                     mVelocityTracker = VelocityTracker.obtain();
@@ -58,39 +63,48 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
                 break;
 
-            case MotionEvent.ACTION_MOVE:
+            } case MotionEvent.ACTION_MOVE: {
 
 
-                    if (mScrollableParent != null) {
-                        mScrollableParent.requestDisallowInterceptTouchEvent(true);
+                if (mScrollableParent != null) {
+                    mScrollableParent.requestDisallowInterceptTouchEvent(true);
+                }
+
+                // Find the index of the active pointer and fetch its position
+                final int pointerIndex =
+                        MotionEventCompat.findPointerIndex(event, mActivePointerId);
+
+                if (pointerIndex >= 0 && pointerIndex < event.getPointerCount()) {
+
+                    float xMove = MotionEventCompat.getX(event, pointerIndex);
+                    float yMove = MotionEventCompat.getY(event, pointerIndex);
+
+                    int dx = (int) (xMove - mInitialTouchX);
+                    int dy = (int) (yMove - mInitialTouchY);
+
+                    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+                        mClick = false;
+                        if (mCardsView.mMovable) {
+                            mCardsView.onMove(dx, dy);
+                        }
                     }
+                }
 
-                    if (mCardsView.mMovable) {
-
-                        float xMove = event.getX(pointerId);
-                        float yMove = event.getY(pointerId);
-
-                        Log.d(TAG, "ACTION_MOVE " + mInitialTouchX);
-
-                        float dx = xMove - mInitialTouchX;
-                        float dy = yMove - mInitialTouchY;
-
-                        mCardsView.onMove(dx, dy);
-                    } else {
-                        mVelocityTracker.addMovement(event);
-                    }
+                mVelocityTracker.addMovement(event);
 
                 break;
 
-            case MotionEvent.ACTION_UP:
+            } case MotionEvent.ACTION_UP: {
 
-                Log.d(TAG, "ACTION_UP " + mInitialTouchX);
+                mActivePointerId = INVALIDATE_POINTER_ID;
 
-                if (!mCardsView.mMovable) {
+                if (mClick) {
+                    v.performClick();
+                } else if (!mCardsView.mMovable) {
 
                     mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
 
-                    final float velocityX = mVelocityTracker.getXVelocity(pointerId);
+                    final float velocityX = mVelocityTracker.getXVelocity(mActivePointerId);
 
                     if ((Math.abs(velocityX) > mMinimumFlingVelocity)) {
 
@@ -99,25 +113,22 @@ public class OnTouchCardListener implements View.OnTouchListener {
                         } else if (velocityX > 1 && !mCardsView.mAnimLock) {
                             mCardsView.onSwipe(R.anim.slide_out_right);
                         }
-
-                    } else {
-                        v.performClick();
                     }
+
                 } else {
 
                     if (mCardsView.mAnimation == CardsView.LEFT_SWIPE) {
                         mCardsView.onSwipe(R.anim.slide_out_left);
                     } else if (mCardsView.mAnimation == CardsView.RIGHT_SWIPE) {
                         mCardsView.onSwipe(R.anim.slide_out_right);
-                    } else {
+                    } else if (mCardsView.mAnimation == CardsView.MOVE_TO_INITIAL) {
                         mCardsView.moveTopCardToStartPos();
                     }
-
                 }
 
                 return false;
 
-            default:
+            } default:
                 return false;
         }
         return true;
