@@ -1,8 +1,13 @@
 package com.cards.kifio.swipeablecards;
 
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.FrameLayout;
+
+import java.util.Locale;
 
 import static com.cards.kifio.swipeablecards.CardsView.DEFAULT_DEGREES_VALUE;
 
@@ -13,31 +18,28 @@ import static com.cards.kifio.swipeablecards.CardsView.DEFAULT_DEGREES_VALUE;
 public class MoveToStartPosAnimation extends Animation {
 
     private View mView;
-    private float mX, mY;
+    private int mX, mY;
     private int mDx, mDy, mXLimit;
 
-    public MoveToStartPosAnimation(View view, int x, int y, int dx, int dy, int xLimit) {
+    public MoveToStartPosAnimation(View view, float currentX, float currentY, float startX, float startY, float xLimit) {
         mView = view;
-        mX = x;
-        mY = y;
-        mDx = dx;
-        mDy = dy;
-        mXLimit = xLimit;
+        mX = (int) currentX;
+        mY = (int) currentY;
+        mDx = (int) startX;
+        mDy = (int) startY;
+        mXLimit = (int) xLimit;
     }
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
-        if (interpolatedTime != 1.0 && mView != null) {
-            moveAndRotate((mX * (1 - interpolatedTime)) + mDx, (mY * (1 - interpolatedTime)) + mDy);
-        } else {
-            mView = null;
-        }
+        moveAndRotate((int) (mX * (1 - interpolatedTime)) + mDx, (int) (mY * (1 - interpolatedTime)) + mDy);
     }
 
-    private void moveAndRotate(float newX, float newY) {
-        mView.setRotation((int) ((DEFAULT_DEGREES_VALUE * (newX - mDx)) / mXLimit));
-        mView.setX(newX);
-        mView.setY(newY);
+    private void moveAndRotate(int x, int y) {
+        Log.d("moveAndRotate", String.format(Locale.getDefault(), "x: %d, y: %d", x, y));
+        mView.setRotation(((DEFAULT_DEGREES_VALUE * (x - mDx)) / mXLimit));
+        mView.setX(x);
+        mView.setY(y);
     }
 
 
