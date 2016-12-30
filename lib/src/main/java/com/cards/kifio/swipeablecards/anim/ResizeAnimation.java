@@ -1,4 +1,4 @@
-package com.cards.kifio.swipeablecards;
+package com.cards.kifio.swipeablecards.anim;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +18,7 @@ public class ResizeAnimation extends Animation {
     private View mView;
     private ViewGroup.MarginLayoutParams mLp;
 
-    ResizeAnimation(View view, float marginDiff, float yDiff) {
+    public ResizeAnimation(View view, float marginDiff, float yDiff) {
 
         mView = view;
         mLp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();

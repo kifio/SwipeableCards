@@ -13,7 +13,9 @@ import android.view.ViewParent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+
+import com.cards.kifio.swipeablecards.anim.MoveToStartPosAnimation;
+import com.cards.kifio.swipeablecards.anim.ResizeAnimation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,12 +44,9 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     private int mVisibleCardsCount;
 
     /**
-     * Order of items in CardsView. Direct order is from first to last, Reverse is from last item to first.
+     * If true, order of items in CardsView will be reverse.
      */
-    public static final int DIRECT_ORDER = 0;
-    public static final int REVERSE_ORDER = 1;
-
-    private int mOrder;
+    private boolean mReverse;
 
     /**
      * Default margins of CardView. If you will use default android:margins, animations will be look cropped.
@@ -73,18 +72,13 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     boolean mMovable;
 
     /**
-     * Increasing this value can lead to errors in determining the x position of view.
+     * Types of animations for moving top card.
      */
-    static final int DEFAULT_DEGREES_VALUE = 15;
-
     static final int LEFT_SWIPE = 0;
     static final int RIGHT_SWIPE = 1;
     static final int MOVE_TO_INITIAL = 2;
     static final int NO_ANIMATION = 3;
 
-    /**
-     * Types of animations for moving top card.
-     */
     @IntDef({LEFT_SWIPE, RIGHT_SWIPE, MOVE_TO_INITIAL, NO_ANIMATION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AnimationType {}
@@ -101,8 +95,9 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
     public boolean mAnimLock = false;
 
-    public CardsView(Context context) {
+    public CardsView(Context context, int visibleCardsCount) {
         super(context);
+        mVisibleCardsCount = visibleCardsCount;
     }
 
     public CardsView(Context context, AttributeSet attrSet) {
@@ -138,7 +133,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
             mMovable = attrs.getBoolean(R.styleable.CardsView_movable, false);
 
-            mOrder = attrs.getInt(R.styleable.CardsView_order, DIRECT_ORDER);
+            mReverse = attrs.getBoolean(R.styleable.CardsView_reverse, false);
 
         } finally {
             attrs.recycle();
@@ -159,20 +154,58 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
         return mAdapter;
     }
 
-    /**
-     * If CardsView is child of ScrollView or NestedScrollView, to avoid scroll events when user swipe cards, set reference on ScrollView.
-     *
-     * @param scrollableParent ScrollView or NestedScrollView instance in view hierarchy.
-     */
-    public void setScrollableParent(ViewParent scrollableParent) {
-        mDefaultOnTouchListener.setScrollableParent(scrollableParent);
+    public int getMarginHorizontalStep() {
+        return mMarginHorizontalStep;
+    }
+
+    public void setMarginHorizontalStep(int step) {
+        mMarginHorizontalStep = step;
+    }
+
+    public int getMarginVerticalStep() {
+        return mMarginVerticalStep;
+    }
+
+    public void setMarginVerticalStep(int step) {
+        mMarginVerticalStep = step;
+    }
+
+    public boolean isReverse() {
+        return mReverse;
+    }
+
+    public void setReverse(boolean reverse) {
+        mReverse = mReverse;
+    }
+
+    public boolean isInfinite() {
+        return mInfinite;
+    }
+
+    public void setInfinite(boolean infinite) {
+        mInfinite = mInfinite;
+    }
+
+    public boolean isMovable() {
+        return mMovable;
+    }
+
+    public void setmMovable(boolean movable) {
+        mMovable = movable;
     }
 
     /**
      * For listening changing of mVisibleCardsCount.
      */
-    public void setOnCardsCountChangedListener(OnCardsCountChangeListener mOnCardsCountChangedListener) {
-        this.mOnCardsCountChangedListener = mOnCardsCountChangedListener;
+    public void setOnCardsCountChangedListener(OnCardsCountChangeListener listener) {
+        mOnCardsCountChangedListener = listener;
+    }
+
+    /**
+     * If CardsView is child of ScrollView or NestedScrollView, to avoid scroll events when user swipe cards, set reference on ScrollView.
+     */
+    public void setScrollableParent(ViewParent scrollableParent) {
+        mDefaultOnTouchListener.setScrollableParent(scrollableParent);
     }
 
     public void reload() {
@@ -249,11 +282,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     }
 
     private void initCard(SwipeableCard card, int position) {
-        mAdapter.initCard(card, isReverseOrder() ? (mAdapter.getCount() - position) - 1 : position);
-    }
-
-    private boolean isReverseOrder() {
-        return mOrder == REVERSE_ORDER;
+        mAdapter.initCard(card, mReverse ? (mAdapter.getCount() - position) - 1 : position);
     }
 
     void onSwipe(int animId) {
@@ -284,6 +313,10 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
             mSwipedCardsCount++;
         }
 
+        if (mOnCardsCountChangedListener != null) {
+            mOnCardsCountChangedListener.onCardsCountChanged(mSwipedCardsCount);
+        }
+
         resizeAndReplaceCards(lastCardNeeded ? 1 : 0);
     }
 
@@ -297,7 +330,9 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
             SwipeableCard view = (SwipeableCard) getChildAt(i);
 
-            if (i == secondPostion) {
+            if (i == firstPosition) {
+                view.setOnTouchCardListener(mDefaultOnTouchListener);
+            } else if (i == secondPostion) {
                 view.setClipRect(0);
                 initCard(view, mSwipedCardsCount + 1);
                 view.setOnTouchCardListener(mDefaultOnTouchListener);
@@ -319,7 +354,9 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
         float x = topView.getX() + dx;
         float y = topView.getY() + dy;
 
-        topView.setRotation((int) ((DEFAULT_DEGREES_VALUE * (x - dx)) / mSwipeEdge));
+        float defaultDeegrees = 15; //Increasing this value can lead to errors in determining the x position of view.
+
+        topView.setRotation((int) ((defaultDeegrees * (x - dx)) / mSwipeEdge));
 
         topView.setX(x);
         topView.setY(y);

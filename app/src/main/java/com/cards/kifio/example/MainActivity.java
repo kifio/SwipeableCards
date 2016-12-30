@@ -2,29 +2,45 @@ package com.cards.kifio.example;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cards.kifio.swipeablecards.CardsView;
 import com.cards.kifio.swipeablecards.ContentAdapter;
+import com.cards.kifio.swipeablecards.OnCardsCountChangeListener;
 import com.cards.kifio.swipeablecards.SwipeableCard;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnCardsCountChangeListener {
+
+    private static final String TAG = "kifio-MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_main);
 
-        CardsView cardsView = (CardsView) findViewById(R.id.cardsView);
-        cardsView.setAdapter(new Adapter());
-        cardsView.setScrollableParent((ViewParent) findViewById(R.id.root));
-        cardsView.reload();
+        LinearLayout ll = (LinearLayout) findViewById(R.id.container);
+
+        for (int i = 0; i < 7; i++) {
+            CardsView cardsView = (CardsView) ll.getChildAt(i);
+            cardsView.setAdapter(new Adapter());
+            cardsView.setScrollableParent((ViewParent) findViewById(R.id.root));
+            cardsView.setOnCardsCountChangedListener(this);
+            cardsView.reload();
+        }
+    }
+
+    @Override
+    public void onCardsCountChanged(int count) {
+        Log.d(TAG, "onCardsCountChanged: " + count);
     }
 
     static class Adapter extends ContentAdapter<String> {

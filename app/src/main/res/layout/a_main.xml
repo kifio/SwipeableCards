@@ -8,19 +8,73 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/container"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.cards.kifio.swipeablecards.CardsView
-            android:id="@+id/cardsView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:splitMotionEvents="false"
+            app:visibleViewsCount="0"
+            app:infinite="true"
+            app:movable="true"
+            app:reverse="false"/>
+
+        <com.cards.kifio.swipeablecards.CardsView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:splitMotionEvents="false"
+            app:visibleViewsCount="1"
+            app:infinite="false"
+            app:movable="true"
+            app:reverse="false"/>
+
+        <com.cards.kifio.swipeablecards.CardsView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:splitMotionEvents="false"
+            app:visibleViewsCount="2"
+            app:infinite="false"
+            app:movable="true"
+            app:reverse="false"/>
+
+        <com.cards.kifio.swipeablecards.CardsView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:splitMotionEvents="false"
+            app:visibleViewsCount="3"
+            app:infinite="false"
+            app:movable="true"
+            app:reverse="false"/>
+
+        <com.cards.kifio.swipeablecards.CardsView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:splitMotionEvents="false"
             app:visibleViewsCount="4"
             app:infinite="false"
             app:movable="true"
-            app:order="reverse"/>
+            app:reverse="false"/>
+
+        <com.cards.kifio.swipeablecards.CardsView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:splitMotionEvents="false"
+            app:visibleViewsCount="5"
+            app:infinite="false"
+            app:movable="true"
+            app:reverse="false"/>
+
+        <com.cards.kifio.swipeablecards.CardsView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:splitMotionEvents="false"
+            app:visibleViewsCount="6"
+            app:infinite="false"
+            app:movable="true"
+            app:reverse="false"/>
 
     </LinearLayout>
 
