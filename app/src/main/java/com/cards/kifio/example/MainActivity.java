@@ -29,13 +29,26 @@ public class MainActivity extends AppCompatActivity implements OnCardsCountChang
 
         LinearLayout ll = (LinearLayout) findViewById(R.id.container);
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 4; i++) {
             CardsView cardsView = (CardsView) ll.getChildAt(i);
             cardsView.setAdapter(new Adapter());
             cardsView.setScrollableParent((ViewParent) findViewById(R.id.root));
             cardsView.setOnCardsCountChangedListener(this);
             cardsView.reload();
         }
+
+        CardsView cv = new CardsView(this, 12);
+        cv.setAdapter(new Adapter());
+        cv.setScrollableParent((ViewParent) findViewById(R.id.root));
+        cv.setOnCardsCountChangedListener(this);
+        cv.setInfinite(true);
+        cv.setMovable(true);
+        cv.setMarginHorizontalStep(0);
+        cv.setMarginVerticalStep(24);
+        cv.setCardsMargins(0, 8, 12, 16);
+        cv.reload();
+
+        ll.addView(cv);
     }
 
     @Override

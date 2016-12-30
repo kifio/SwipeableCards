@@ -175,7 +175,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     }
 
     public void setReverse(boolean reverse) {
-        mReverse = mReverse;
+        mReverse = reverse;
     }
 
     public boolean isInfinite() {
@@ -183,15 +183,22 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     }
 
     public void setInfinite(boolean infinite) {
-        mInfinite = mInfinite;
+        mInfinite = infinite;
     }
 
     public boolean isMovable() {
         return mMovable;
     }
 
-    public void setmMovable(boolean movable) {
+    public void setMovable(boolean movable) {
         mMovable = movable;
+    }
+
+    public void setCardsMargins(int left, int top, int right, int bottom){
+        mMarginLeft = left;
+        mMarginTop = top;
+        mMarginRight = right;
+        mMarginBottom = bottom;
     }
 
     /**

@@ -17,36 +17,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:splitMotionEvents="false"
-            app:visibleViewsCount="0"
-            app:infinite="true"
-            app:movable="true"
-            app:reverse="false"/>
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:splitMotionEvents="false"
-            app:visibleViewsCount="1"
-            app:infinite="false"
-            app:movable="true"
-            app:reverse="false"/>
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:splitMotionEvents="false"
-            app:visibleViewsCount="2"
-            app:infinite="false"
-            app:movable="true"
-            app:reverse="false"/>
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:splitMotionEvents="false"
             app:visibleViewsCount="3"
+            app:marginVerticalStep="4dp"
+            app:marginHorizontalStep="2dp"
             app:infinite="false"
-            app:movable="true"
+            app:movable="false"
             app:reverse="false"/>
 
         <com.cards.kifio.swipeablecards.CardsView
@@ -54,6 +29,8 @@
             android:layout_height="match_parent"
             android:splitMotionEvents="false"
             app:visibleViewsCount="4"
+            app:marginVerticalStep="13dp"
+            app:marginHorizontalStep="0dp"
             app:infinite="false"
             app:movable="true"
             app:reverse="false"/>
@@ -63,8 +40,10 @@
             android:layout_height="match_parent"
             android:splitMotionEvents="false"
             app:visibleViewsCount="5"
+            app:marginVerticalStep="24dp"
+            app:marginHorizontalStep="8dp"
             app:infinite="false"
-            app:movable="true"
+            app:movable="false"
             app:reverse="false"/>
 
         <com.cards.kifio.swipeablecards.CardsView
@@ -73,7 +52,7 @@
             android:splitMotionEvents="false"
             app:visibleViewsCount="6"
             app:infinite="false"
-            app:movable="true"
+            app:movable="false"
             app:reverse="false"/>
 
     </LinearLayout>

@@ -12,7 +12,7 @@ Add dependency in your build.gradle
 
 ```groovy
 dependencies {
-    compile 'com.github.kifio:swipeablecards:0.1'
+    compile 'com.github.kifio:swipeablecards:0.3'
 }
 ```
 
@@ -31,6 +31,9 @@ For start using swipeable cards, add CardsView to your layout:
               
  </LinearLayout>
 ```
+
+Do not set visible views count less than 3. In case with 1 or 2 visible cards, all cards will be initialized with wrong items.
+It's known bug, and it will be fixed in next pre-release.
 
 You must extend SwipeableCard, for creating cards with your own content.
 
@@ -115,6 +118,7 @@ That's it.
 
 **Attributes of CardsView**
 
+* visibleViewsCount - count of visible cards. It's initialized in constructor.
 * marginHorizontalStep - horizontal space between 2 neighboring cards. Default value - 8dp.
 * marginVerticalStep - difference between y position of 2 neighboring cards. Default value - 8dp.
 
@@ -124,6 +128,13 @@ That's it.
 * marginBottom - default bottom margin of card.
 
 * margin - set all 4 previous args with one value.
+
+* infinite - infinite getting cards from adapter.
+* reverse - reverse order of initializing items from adapter.
+* movable - draggable cards.
+
+All attributes, excepting ```visibleViewsCount```, has setters and getters.
+
 
 
 

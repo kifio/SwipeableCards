@@ -15,7 +15,7 @@ ext {
     siteUrl = 'https://github.com/kifio/SwipeableCards'
     gitUrl = 'https://github.com/kifio/SwipeableCards.git'
 
-    libraryVersion = '0.2'
+    libraryVersion = '0.3'
 
     developerId = 'kifio'
     developerName = 'Ivan Murashov'
