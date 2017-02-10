@@ -1,14 +1,15 @@
 package com.cards.kifio.swipeablecards;
 
 import android.support.v4.view.MotionEventCompat;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
 
-import java.util.Locale;
+import static com.cards.kifio.swipeablecards.AnimationTypes.LEFT_SWIPE;
+import static com.cards.kifio.swipeablecards.AnimationTypes.MOVE_TO_INITIAL;
+import static com.cards.kifio.swipeablecards.AnimationTypes.RIGHT_SWIPE;
 
 /**
  * Created by kifio on 10/29/16.
@@ -23,9 +24,15 @@ public class OnTouchCardListener implements View.OnTouchListener {
     private CardsView mCardsView;
     private ViewParent mScrollableParent;
     private VelocityTracker mVelocityTracker = null;
-    private int mMinimumFlingVelocity, mMaximumFlingVelocity;
-    private float mInitialTouchX, mInitialTouchY;
+
     private int mActivePointerId = INVALIDATE_POINTER_ID;
+
+    private int mMinimumFlingVelocity;
+    private int mMaximumFlingVelocity;
+
+    private float mInitialTouchX;
+    private float mInitialTouchY;
+
     private boolean mClick = false;
 
     OnTouchCardListener(CardsView view) {
@@ -64,7 +71,6 @@ public class OnTouchCardListener implements View.OnTouchListener {
                 break;
 
             } case MotionEvent.ACTION_MOVE: {
-
 
                 if (mScrollableParent != null) {
                     mScrollableParent.requestDisallowInterceptTouchEvent(true);
@@ -117,12 +123,12 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
                 } else {
 
-                    if (mCardsView.mAnimation == CardsView.LEFT_SWIPE) {
+                    if (mCardsView.mAnimation == LEFT_SWIPE) {
                         mCardsView.onSwipe(R.anim.slide_out_left);
-                    } else if (mCardsView.mAnimation == CardsView.RIGHT_SWIPE) {
+                    } else if (mCardsView.mAnimation == RIGHT_SWIPE) {
                         mCardsView.onSwipe(R.anim.slide_out_right);
-                    } else if (mCardsView.mAnimation == CardsView.MOVE_TO_INITIAL) {
-                        mCardsView.moveTopCardToStartPos();
+                    } else if (mCardsView.mAnimation == MOVE_TO_INITIAL) {
+                        mCardsView.onStopMoving();
                     }
                 }
 
@@ -136,5 +142,10 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
     void setScrollableParent(ViewParent scrollableParent) {
         mScrollableParent = scrollableParent;
+    }
+
+    public void dispose() {
+        mScrollableParent = null;
+        mVelocityTracker = null;
     }
 }

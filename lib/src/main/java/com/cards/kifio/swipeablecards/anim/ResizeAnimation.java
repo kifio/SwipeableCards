@@ -1,9 +1,11 @@
 package com.cards.kifio.swipeablecards.anim;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.FrameLayout;
 
 /**
  * Created by kifio on 7/6/16.
@@ -13,33 +15,30 @@ public class ResizeAnimation extends Animation {
 
     private static final String TAG = "RG-ResizeAnimation";
 
-    private float mInitialHorizontalMargin, mInitialVerticalMargin, mMarginDiff, mYDiff;
+    private float mWidthDiff;
+    private float mYDiff;
+    private float mStartY;
+    private float mStartWidth;
 
     private View mView;
-    private ViewGroup.MarginLayoutParams mLp;
+    private FrameLayout.LayoutParams mLp;
 
     public ResizeAnimation(View view, float marginDiff, float yDiff) {
 
         mView = view;
-        mLp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        mLp = (FrameLayout.LayoutParams) view.getLayoutParams();
 
-        mInitialHorizontalMargin = mLp.leftMargin;
-        mInitialVerticalMargin = mLp.topMargin;
+        mStartY = view.getY();
+        mStartWidth = view.getWidth();
 
-        mMarginDiff = marginDiff;
+        mWidthDiff = 2 * marginDiff;
         mYDiff = yDiff;
     }
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
-
-        float leftMargin = mMarginDiff * interpolatedTime;
-        float dy = mYDiff * interpolatedTime;
-
-        mLp.leftMargin = (int) (mInitialHorizontalMargin - leftMargin);
-        mLp.rightMargin = (int) (mInitialHorizontalMargin - leftMargin);
-        mLp.topMargin = (int) (mInitialVerticalMargin - dy);
-
+        mLp.width = (int) (mStartWidth + mWidthDiff * interpolatedTime);
+        mView.setY(mStartY - mYDiff * interpolatedTime);
         mView.requestLayout();
     }
 }

@@ -1,6 +1,16 @@
 <resources>
+
     <string name="app_name">SwipeableCards</string>
-    <string name="card_text" formatted="false">Simple card #%d</string>
-    <string name="button_title">Clickable Button</string>
-    <string name="button_click_action">Click on button</string>
+
+    <string-array name="cards_titles">
+        <item>Finn</item>
+        <item>Jake</item>
+        <item>Bubblegum Princes</item>
+        <item>Ice King</item>
+        <item>Marceline</item>
+        <item>BMO</item>
+        <item>Susann Strong</item>
+        <item>Peppermint Buttler</item>
+    </string-array>
+
 </resources>

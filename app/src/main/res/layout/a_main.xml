@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
@@ -7,54 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/container"
-        android:orientation="vertical"
+    <com.cards.kifio.swipeablecards.CardsView
+        android:id="@+id/cards_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@android:color/holo_blue_bright"
+        app:yPositionDiff="8dp"
+        app:widthDiff="8dp"
+        app:infinite="false"
+        app:reverse="true"
+        app:visibleViewsCount="51"/>
 
-        <com.cards.kifio.swipeablecards.CardsView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:splitMotionEvents="false"
-            app:visibleViewsCount="3"
-            app:marginVerticalStep="4dp"
-            app:marginHorizontalStep="2dp"
-            app:infinite="false"
-            app:movable="false"
-            app:reverse="false"/>
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:splitMotionEvents="false"
-            app:visibleViewsCount="4"
-            app:marginVerticalStep="13dp"
-            app:marginHorizontalStep="0dp"
-            app:infinite="false"
-            app:movable="true"
-            app:reverse="false"/>
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:splitMotionEvents="false"
-            app:visibleViewsCount="5"
-            app:marginVerticalStep="24dp"
-            app:marginHorizontalStep="8dp"
-            app:infinite="false"
-            app:movable="false"
-            app:reverse="false"/>
-
-        <com.cards.kifio.swipeablecards.CardsView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:splitMotionEvents="false"
-            app:visibleViewsCount="6"
-            app:infinite="false"
-            app:movable="false"
-            app:reverse="false"/>
-
-    </LinearLayout>
-
-</ScrollView>
+</FrameLayout>

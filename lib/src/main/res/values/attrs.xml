@@ -2,13 +2,8 @@
 <resources>
     <declare-styleable name="CardsView">
 
-        <attr name="marginHorizontalStep" format="dimension"/>
-        <attr name="marginVerticalStep" format="dimension"/>
-        <attr name="marginLeft" format="dimension"/>
-        <attr name="marginRight" format="dimension"/>
-        <attr name="marginTop" format="dimension"/>
-        <attr name="marginBottom" format="dimension"/>
-        <attr name="margin" format="dimension"/>
+        <attr name="yPositionDiff" format="dimension"/>
+        <attr name="widthDiff" format="dimension"/>
         <attr name="visibleViewsCount" format="integer" />
         <attr name="infinite" format="boolean" />
         <attr name="movable" format="boolean" />
