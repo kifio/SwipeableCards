@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cards.kifio.swipeablecards.CardsView;
@@ -41,8 +42,11 @@ public class MainActivity extends AppCompatActivity implements CardsView.OnSwipe
         @Override
         public View getView(ViewGroup viewGroup) {
             View view =  LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.v_card, viewGroup, false);
+
             TextView title = (TextView) view.findViewById(R.id.title);
             title.setText(getItem() + " : " + mNextPosition);
+
+
             return view;
         }
     }

@@ -11,12 +11,12 @@
         android:id="@+id/cards_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_gravity="center"
         android:background="@android:color/holo_blue_bright"
         app:yPositionDiff="8dp"
         app:widthDiff="8dp"
-        app:infinite="false"
-        app:reverse="true"
-        app:visibleViewsCount="51"/>
+        app:movable="false"
+        app:infinite="true"
+        app:visibleViewsCount="10"/>
 
 </FrameLayout>

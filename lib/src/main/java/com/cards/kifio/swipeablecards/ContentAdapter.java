@@ -1,12 +1,9 @@
 package com.cards.kifio.swipeablecards;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -14,9 +11,8 @@ import java.util.List;
  */
 public abstract class ContentAdapter<T> {
 
-    protected final List<T> mData;
+    private final List<T> mData;
     protected int mNextPosition = 0;
-    protected boolean mReverse;
 
     public ContentAdapter(List<T> data) {
         mData = new ArrayList<>();
@@ -29,16 +25,7 @@ public abstract class ContentAdapter<T> {
 
     protected abstract View getView(ViewGroup viewGroup);
 
-    void reset(boolean reverse) {
-        mReverse = reverse;
-        mNextPosition = 0;
-    }
-
     protected T getItem() {
-        if (mReverse) {
-            return mData.get(mData.size() - 1 - mNextPosition);
-        } else {
-            return mData.get(mNextPosition);
-        }
+        return mData.get(mNextPosition < mData.size() ? mNextPosition : 0);
     }
 }

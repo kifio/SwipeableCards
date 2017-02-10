@@ -1,6 +1,7 @@
 package com.cards.kifio.swipeablecards;
 
 import android.support.v4.view.MotionEventCompat;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -47,95 +48,100 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
         final int action = MotionEventCompat.getActionMasked(event);
 
-        switch (action) {
+        if (!mCardsView.mTouchLock) {
+            switch (action) {
 
-            case MotionEvent.ACTION_DOWN: {
+                case MotionEvent.ACTION_DOWN: {
 
-                mClick = true;
+                    mClick = true;
 
-                final int pointerIndex = MotionEventCompat.getActionIndex(event);
-                final float x = MotionEventCompat.getX(event, pointerIndex);
-                final float y = MotionEventCompat.getY(event, pointerIndex);
+                    final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                    final float x = MotionEventCompat.getX(event, pointerIndex);
+                    final float y = MotionEventCompat.getY(event, pointerIndex);
 
-                mInitialTouchX = x;
-                mInitialTouchY = y;
+                    mInitialTouchX = x;
+                    mInitialTouchY = y;
 
-                mActivePointerId = MotionEventCompat.getPointerId(event, 0);
+                    mActivePointerId = MotionEventCompat.getPointerId(event, 0);
 
-                if (mVelocityTracker == null) {
-                    mVelocityTracker = VelocityTracker.obtain();
-                } else {
-                    mVelocityTracker.clear();
+                    if (mVelocityTracker == null) {
+                        mVelocityTracker = VelocityTracker.obtain();
+                    } else {
+                        mVelocityTracker.clear();
+                    }
+
+                    break;
+
                 }
+                case MotionEvent.ACTION_MOVE: {
 
-                break;
+                    if (mScrollableParent != null) {
+                        mScrollableParent.requestDisallowInterceptTouchEvent(true);
+                    }
 
-            } case MotionEvent.ACTION_MOVE: {
+                    // Find the index of the active pointer and fetch its position
+                    final int pointerIndex =
+                            MotionEventCompat.findPointerIndex(event, mActivePointerId);
 
-                if (mScrollableParent != null) {
-                    mScrollableParent.requestDisallowInterceptTouchEvent(true);
-                }
+                    if (pointerIndex >= 0 && pointerIndex < event.getPointerCount()) {
 
-                // Find the index of the active pointer and fetch its position
-                final int pointerIndex =
-                        MotionEventCompat.findPointerIndex(event, mActivePointerId);
+                        float xMove = MotionEventCompat.getX(event, pointerIndex);
+                        float yMove = MotionEventCompat.getY(event, pointerIndex);
 
-                if (pointerIndex >= 0 && pointerIndex < event.getPointerCount()) {
+                        int dx = (int) (xMove - mInitialTouchX);
+                        int dy = (int) (yMove - mInitialTouchY);
 
-                    float xMove = MotionEventCompat.getX(event, pointerIndex);
-                    float yMove = MotionEventCompat.getY(event, pointerIndex);
-
-                    int dx = (int) (xMove - mInitialTouchX);
-                    int dy = (int) (yMove - mInitialTouchY);
-
-                    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
-                        mClick = false;
-                        if (mCardsView.mMovable) {
-                            mCardsView.onMove(dx, dy);
+                        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+                            mClick = false;
+                            if (mCardsView.mMovable) {
+                                mCardsView.onMove(dx, dy);
+                            }
                         }
                     }
+
+                    mVelocityTracker.addMovement(event);
+
+                    break;
+
                 }
+                case MotionEvent.ACTION_UP: {
 
-                mVelocityTracker.addMovement(event);
+                    mActivePointerId = INVALIDATE_POINTER_ID;
 
-                break;
+                    if (mClick) {
+                        v.performClick();
+                    } else if (!mCardsView.mMovable) {
 
-            } case MotionEvent.ACTION_UP: {
+                        mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
 
-                mActivePointerId = INVALIDATE_POINTER_ID;
+                        final float velocityX = mVelocityTracker.getXVelocity(mActivePointerId);
 
-                if (mClick) {
-                    v.performClick();
-                } else if (!mCardsView.mMovable) {
+                        if ((Math.abs(velocityX) > mMinimumFlingVelocity)) {
 
-                    mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
+                            if (velocityX < -1 && !mCardsView.mAnimLock) {
+                                mCardsView.onSwipe(R.anim.slide_out_left);
+                            } else if (velocityX > 1 && !mCardsView.mAnimLock) {
+                                mCardsView.onSwipe(R.anim.slide_out_right);
+                            }
+                        }
 
-                    final float velocityX = mVelocityTracker.getXVelocity(mActivePointerId);
+                    } else {
 
-                    if ((Math.abs(velocityX) > mMinimumFlingVelocity)) {
-
-                        if (velocityX < -1 && !mCardsView.mAnimLock) {
+                        if (mCardsView.mAnimation == LEFT_SWIPE) {
                             mCardsView.onSwipe(R.anim.slide_out_left);
-                        } else if (velocityX > 1 && !mCardsView.mAnimLock) {
+                        } else if (mCardsView.mAnimation == RIGHT_SWIPE) {
                             mCardsView.onSwipe(R.anim.slide_out_right);
+                        } else if (mCardsView.mAnimation == MOVE_TO_INITIAL) {
+                            mCardsView.onStopMoving();
                         }
                     }
 
-                } else {
+                    return false;
 
-                    if (mCardsView.mAnimation == LEFT_SWIPE) {
-                        mCardsView.onSwipe(R.anim.slide_out_left);
-                    } else if (mCardsView.mAnimation == RIGHT_SWIPE) {
-                        mCardsView.onSwipe(R.anim.slide_out_right);
-                    } else if (mCardsView.mAnimation == MOVE_TO_INITIAL) {
-                        mCardsView.onStopMoving();
-                    }
                 }
-
-                return false;
-
-            } default:
-                return false;
+                default:
+                    return false;
+            }
         }
         return true;
     }

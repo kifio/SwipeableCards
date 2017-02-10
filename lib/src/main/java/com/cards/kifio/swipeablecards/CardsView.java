@@ -46,10 +46,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
     private int mCardsInContainer;
 
-    /**
-     * Flag for enabling reverse order of cards.
-     */
-    boolean mReverse;
+    private int mTag = 0;
 
     /**
      * Flag for enabling infinite cards mode. In this mode, after initialization last item from adapter, first item from adapter will be initialized.
@@ -69,11 +66,21 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     private OnTouchCardListener mOnTouchListener = new OnTouchCardListener(this);
     private OnSwipeCardListener mOnCardSwipeListener;
 
-    public boolean mAnimLock = false;
+    boolean mAnimLock = false;
+    boolean mTouchLock = false;
+
+    private Runnable mSetHeightRunnable = new Runnable() {
+        @Override
+        public void run() {
+            getLayoutParams().height = getMeasuredHeight() + mYPositionDiff * mVisibleCardsCount;
+            requestLayout();
+        }
+    };
 
     public CardsView(Context context, int visibleCardsCount) {
         super(context);
         mVisibleCardsCount = visibleCardsCount;
+        post(mSetHeightRunnable);
     }
 
     public CardsView(Context context, AttributeSet attrSet) {
@@ -93,11 +100,11 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
             mMovable = attrs.getBoolean(R.styleable.CardsView_movable, false);
 
-            mReverse = attrs.getBoolean(R.styleable.CardsView_reverse, false);
-
         } finally {
             attrs.recycle();
         }
+
+        post(mSetHeightRunnable);
     }
 
     @Override
@@ -120,6 +127,10 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
     public void reload() {
 
+        if (!mInfinite) {
+            mTag = 0;
+        }
+
         mRemovedCards = 0;
 
         if (mVisibleCardsCount < 2) {
@@ -127,8 +138,6 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
         }
 
         if (mAdapter != null) {
-
-            mAdapter.reset(mReverse);
 
             if (mVisibleCardsCount > mAdapter.getCount()) {
                 mVisibleCardsCount = mAdapter.getCount();
@@ -144,30 +153,31 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
         for (int i = 0; i < mVisibleCardsCount; i++) addView(i);
 
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getLayoutParams().height = getMeasuredHeight() + mYPositionDiff * mVisibleCardsCount;
-                requestLayout();
-            }
-        });
     }
 
     private void addView(final int position) {
 
         final View view = mAdapter.getView(this);
         addView(view, 0);
+
         view.setVisibility(INVISIBLE);
         view.setOnTouchListener(mOnTouchListener);
         view.setY(mWidthDiff * position);
-        view.setTag(mAdapter.mNextPosition);
+        view.setTag(mTag);
+
         mAdapter.mNextPosition++;
+        mTag++;
+
+        if (mAdapter.mNextPosition == mAdapter.getCount()) {
+            mAdapter.mNextPosition = 0;
+        }
 
         view.post(new Runnable() {
             @Override
             public void run() {
                 FrameLayout.LayoutParams lp = (LayoutParams) view.getLayoutParams();
                 lp.width = getMeasuredWidth() - (2 * mWidthDiff * position);
+                requestLayout();
                 view.setVisibility(VISIBLE);
             }
         });
@@ -187,17 +197,18 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
         int count = mAdapter.getCount();
 
+        View view = findViewWithTag(mRemovedCards);
+        view.setTag(null);
+
+        Animation anim = AnimationUtils.loadAnimation(getContext(), animId);
+        anim.setAnimationListener(this);
+        view.startAnimation(anim);
+
         if (mInfinite || mRemovedCards + mVisibleCardsCount < count) {
             addView(mVisibleCardsCount - 1);
         } else if (mRemovedCards + mVisibleCardsCount > count) {
             mCardsInContainer--;
         }
-
-        View view = findViewWithTag(mRemovedCards);
-
-        Animation anim = AnimationUtils.loadAnimation(getContext(), animId);
-        anim.setAnimationListener(this);
-        view.startAnimation(anim);
 
         if (mOnCardSwipeListener != null) {
             mOnCardSwipeListener.onSwipeCard(mRemovedCards);
@@ -228,6 +239,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
             Animation anim = new ResizeAnimation(view, mWidthDiff, mYPositionDiff);
             anim.setDuration(res.getInteger(android.R.integer.config_mediumAnimTime));
+            anim.setAnimationListener(this);
             view.startAnimation(anim);
         }
     }
@@ -238,7 +250,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
         mAnimation = NO_ANIMATION;
 
-        View topView = getChildAt(mVisibleCardsCount - 1);
+        View topView = findViewWithTag(mRemovedCards);
 
         float x = topView.getX() + dx;
         float y = topView.getY() + dy;
@@ -268,7 +280,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
         mAnimation = NO_ANIMATION;
 
-        final View view = getChildAt(mVisibleCardsCount - 1);
+        final View view = findViewWithTag(mRemovedCards);
 
         final float x = view.getX();
         final float y = view.getY();
@@ -280,17 +292,24 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
     @Override
     public void onAnimationEnd(Animation animation) {
+
         mAnimLock = false;
-        int pos = getChildCount() - 1;
-        View view = getChildAt(pos);
-        view.setOnTouchListener(null);
-        removeView(view);
-        if (pos == 0) reload();
+        mTouchLock = false;
+
+        if (!ResizeAnimation.class.isInstance(animation)) {
+
+            int pos = getChildCount() - 1;
+            View view = getChildAt(pos);
+            view.setOnTouchListener(null);
+            removeView(view);
+            if (pos == 0)
+                reload();
+        }
     }
 
     @Override
     public void onAnimationStart(Animation animation) {
-
+        mTouchLock = true;
     }
 
     @Override
@@ -301,5 +320,4 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     public interface OnSwipeCardListener {
         void onSwipeCard(int count);
     }
-
 }

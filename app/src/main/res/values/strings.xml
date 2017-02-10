@@ -1,6 +1,7 @@
 <resources>
 
     <string name="app_name">SwipeableCards</string>
+    <string name="greetings">Greetings</string>
 
     <string-array name="cards_titles">
         <item>Finn</item>
@@ -10,7 +11,7 @@
         <item>Marceline</item>
         <item>BMO</item>
         <item>Susann Strong</item>
-        <item>Peppermint Buttler</item>
+        <item>Peppermint Butler</item>
     </string-array>
 
 </resources>
