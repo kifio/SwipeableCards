@@ -23,6 +23,15 @@ public abstract class ContentAdapter<T> {
         return mData.size();
     }
 
+    public void clear() {
+        mData.clear();
+    }
+
+    public void update(List<T> data) {
+        mData.clear();
+        mData.addAll(data);
+    }
+
     protected abstract View getView(ViewGroup viewGroup);
 
     protected T getItem() {

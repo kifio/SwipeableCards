@@ -1,7 +1,6 @@
 package com.cards.kifio.swipeablecards;
 
 import android.support.v4.view.MotionEventCompat;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -119,18 +118,18 @@ public class OnTouchCardListener implements View.OnTouchListener {
                         if ((Math.abs(velocityX) > mMinimumFlingVelocity)) {
 
                             if (velocityX < -1 && !mCardsView.mAnimLock) {
-                                mCardsView.onSwipe(R.anim.slide_out_left);
+                                mCardsView.onSwipe(LEFT_SWIPE, R.anim.slide_out_left);
                             } else if (velocityX > 1 && !mCardsView.mAnimLock) {
-                                mCardsView.onSwipe(R.anim.slide_out_right);
+                                mCardsView.onSwipe(RIGHT_SWIPE, R.anim.slide_out_right);
                             }
                         }
 
                     } else {
 
                         if (mCardsView.mAnimation == LEFT_SWIPE) {
-                            mCardsView.onSwipe(R.anim.slide_out_left);
+                            mCardsView.onSwipe(LEFT_SWIPE, R.anim.slide_out_left);
                         } else if (mCardsView.mAnimation == RIGHT_SWIPE) {
-                            mCardsView.onSwipe(R.anim.slide_out_right);
+                            mCardsView.onSwipe(RIGHT_SWIPE, R.anim.slide_out_right);
                         } else if (mCardsView.mAnimation == MOVE_TO_INITIAL) {
                             mCardsView.onStopMoving();
                         }

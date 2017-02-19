@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.animation.Animation;
@@ -42,10 +43,14 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
      */
     private int mVisibleCardsCount;
 
+    /**
+     * Count of removed views in current moment.
+     */
     private int mRemovedCards;
 
-    private int mCardsInContainer;
-
+    /**
+     * Tag for searching view in ViewGroup. Because count of views
+     */
     private int mTag = 0;
 
     /**
@@ -113,12 +118,12 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
         mSwipeEdge = 2 * (getWidth() / 5);
     }
 
-    public void setContentAdapter(ContentAdapter adapter) {
+    public void setAdapter(ContentAdapter adapter) {
         mAdapter = adapter;
     }
 
-    public void setOnCardSwipeListener(OnSwipeCardListener listener) {
-        mOnCardSwipeListener = listener;
+    public ContentAdapter getAdapter() {
+        return mAdapter;
     }
 
     public void setScrollableParent(ViewParent scrollableParent) {
@@ -133,17 +138,11 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
         mRemovedCards = 0;
 
-        if (mVisibleCardsCount < 2) {
-            throw new RuntimeException("At least 2 cards must be visible.");
-        }
-
         if (mAdapter != null) {
 
             if (mVisibleCardsCount > mAdapter.getCount()) {
                 mVisibleCardsCount = mAdapter.getCount();
             }
-
-            mCardsInContainer = mVisibleCardsCount;
 
         } else {
 
@@ -152,7 +151,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
         }
 
         for (int i = 0; i < mVisibleCardsCount; i++) addView(i);
-
+        getParent().requestLayout();
     }
 
     private void addView(final int position) {
@@ -176,7 +175,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
             @Override
             public void run() {
                 FrameLayout.LayoutParams lp = (LayoutParams) view.getLayoutParams();
-                lp.width = getMeasuredWidth() - (2 * mWidthDiff * position);
+                lp.width = getMeasuredWidth() - (2 * mWidthDiff * position) - lp.leftMargin - lp.rightMargin;
                 requestLayout();
                 view.setVisibility(VISIBLE);
             }
@@ -189,7 +188,7 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
         }
     }
 
-    void onSwipe(int animId) {
+    void onSwipe(int direction, int animId) {
 
         mAnimLock = true;
 
@@ -206,21 +205,19 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
         if (mInfinite || mRemovedCards + mVisibleCardsCount < count) {
             addView(mVisibleCardsCount - 1);
-        } else if (mRemovedCards + mVisibleCardsCount > count) {
-            mCardsInContainer--;
         }
+
+        resizeAndReplaceCards(getChildCount() + mRemovedCards);
 
         if (mOnCardSwipeListener != null) {
-            mOnCardSwipeListener.onSwipeCard(mRemovedCards);
+            mOnCardSwipeListener.onSwipeCard(direction, mRemovedCards);
         }
-
-        if (mCardsInContainer != 0) {
-            resizeAndReplaceCards(mCardsInContainer + mRemovedCards);
-        }
-
     }
 
     private void resizeAndReplaceCards(int lastPosition) {
+
+        if (lastPosition == mRemovedCards)
+            return;
 
         mRemovedCards++;
 
@@ -317,7 +314,11 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
 
     }
 
+    public void setOnCardSwipeListener(OnSwipeCardListener listener) {
+        mOnCardSwipeListener = listener;
+    }
+
     public interface OnSwipeCardListener {
-        void onSwipeCard(int count);
+        void onSwipeCard(int direction, int count);
     }
 }
