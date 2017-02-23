@@ -7,7 +7,6 @@
         <attr name="visibleViewsCount" format="integer" />
         <attr name="infinite" format="boolean" />
         <attr name="movable" format="boolean" />
-        <attr name="reverse" format="boolean" />
 
     </declare-styleable>
 </resources>

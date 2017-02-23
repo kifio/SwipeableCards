@@ -229,13 +229,13 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     }
 
     private void setOnTouchListener(ViewGroup viewGroup) {
+        viewGroup.setOnTouchListener(mOnTouchListener);
 
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
 
             View v = viewGroup.getChildAt(i);
 
             if (v instanceof ViewGroup) {
-                v.setOnTouchListener(mOnTouchListener);
                 setOnTouchListener((ViewGroup) v);
             } else {
                 v.setOnTouchListener(mOnTouchListener);
