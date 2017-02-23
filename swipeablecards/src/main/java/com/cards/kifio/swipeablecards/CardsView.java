@@ -60,23 +60,24 @@ public class CardsView extends FrameLayout implements Animation.AnimationListene
     /**
      * Flag for enabling infinite cards mode. In this mode, after initialization last item from adapter, first item from adapter will be initialized.
      */
-    boolean mInfinite;
+    private boolean mInfinite;
 
     /**
      * Flag for enabling movable mode. In this mode, OnTouchCardListener will handle action ACTION_MOVE and change position of top card.
      */
     boolean mMovable;
 
-    @AnimationTypes.AnimationType int mAnimation = NO_ANIMATION;
-
     private int mSwipeEdge;
 
     private ContentAdapter mAdapter;
+
     private OnTouchCardListener mOnTouchListener = new OnTouchCardListener(this);
     private OnSwipeCardListener mOnCardSwipeListener;
 
     boolean mAnimLock = false;
     boolean mTouchLock = false;
+
+    int mAnimation = NO_ANIMATION;
 
     private Runnable mSetHeightRunnable = new Runnable() {
         @Override

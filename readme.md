@@ -12,7 +12,7 @@ Add dependency in your build.gradle
 
 ```groovy
 dependencies {
-    compile 'com.github.kifio:swipeablecards:1.0'
+    compile 'com.github.kifio:swipeablecards:1.0@aar'
 }
 ```
 

@@ -1,6 +1,5 @@
 package com.cards.kifio.swipeablecards;
 
-import android.support.v4.view.MotionEventCompat;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -45,7 +44,7 @@ public class OnTouchCardListener implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        final int action = MotionEventCompat.getActionMasked(event);
+        final int action = event.getActionMasked();
 
         if (!mCardsView.mTouchLock) {
             switch (action) {
@@ -54,14 +53,14 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
                     mClick = true;
 
-                    final int pointerIndex = MotionEventCompat.getActionIndex(event);
-                    final float x = MotionEventCompat.getX(event, pointerIndex);
-                    final float y = MotionEventCompat.getY(event, pointerIndex);
+                    final int pointerIndex = event.getActionIndex();
+                    final float x = event.getX(pointerIndex);
+                    final float y = event.getY(pointerIndex);
 
                     mInitialTouchX = x;
                     mInitialTouchY = y;
 
-                    mActivePointerId = MotionEventCompat.getPointerId(event, 0);
+                    mActivePointerId = event.getPointerId(0);
 
                     if (mVelocityTracker == null) {
                         mVelocityTracker = VelocityTracker.obtain();
@@ -80,12 +79,12 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
                     // Find the index of the active pointer and fetch its position
                     final int pointerIndex =
-                            MotionEventCompat.findPointerIndex(event, mActivePointerId);
+                            event.findPointerIndex(mActivePointerId);
 
                     if (pointerIndex >= 0 && pointerIndex < event.getPointerCount()) {
 
-                        float xMove = MotionEventCompat.getX(event, pointerIndex);
-                        float yMove = MotionEventCompat.getY(event, pointerIndex);
+                        float xMove = event.getX(pointerIndex);
+                        float yMove = event.getY(pointerIndex);
 
                         int dx = (int) (xMove - mInitialTouchX);
                         int dy = (int) (yMove - mInitialTouchY);
