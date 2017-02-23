@@ -119,18 +119,18 @@ public class OnTouchCardListener implements View.OnTouchListener {
                         if ((Math.abs(velocityX) > mMinimumFlingVelocity)) {
 
                             if (velocityX < -1 && !mCardsView.mAnimLock) {
-                                mCardsView.onSwipe(R.anim.slide_out_left);
+                                mCardsView.onSwipe(AnimationTypes.LEFT_SWIPE, R.anim.slide_out_left);
                             } else if (velocityX > 1 && !mCardsView.mAnimLock) {
-                                mCardsView.onSwipe(R.anim.slide_out_right);
+                                mCardsView.onSwipe(AnimationTypes.RIGHT_SWIPE, R.anim.slide_out_right);
                             }
                         }
 
                     } else {
 
                         if (mCardsView.mAnimation == LEFT_SWIPE) {
-                            mCardsView.onSwipe(R.anim.slide_out_left);
+                            mCardsView.onSwipe(AnimationTypes.LEFT_SWIPE, R.anim.slide_out_left);
                         } else if (mCardsView.mAnimation == RIGHT_SWIPE) {
-                            mCardsView.onSwipe(R.anim.slide_out_right);
+                            mCardsView.onSwipe(AnimationTypes.RIGHT_SWIPE, R.anim.slide_out_right);
                         } else if (mCardsView.mAnimation == MOVE_TO_INITIAL) {
                             mCardsView.onStopMoving();
                         }
@@ -146,8 +146,8 @@ public class OnTouchCardListener implements View.OnTouchListener {
         return true;
     }
 
-    void setScrollableParent(ViewParent scrollableParent) {
-        mScrollableParent = scrollableParent;
+    void setScrollableParent(View scrollableParent) {
+        mScrollableParent = (ViewParent) scrollableParent;
     }
 
     public void dispose() {
