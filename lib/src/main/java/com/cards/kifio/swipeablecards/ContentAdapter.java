@@ -11,11 +11,10 @@ import java.util.List;
  */
 public abstract class ContentAdapter<T> {
 
-    private final List<T> mData;
+    private final List<T> mData = new ArrayList<>();
     protected int mNextPosition = 0;
 
     public ContentAdapter(List<T> data) {
-        mData = new ArrayList<>();
         mData.addAll(data);
     }
 
@@ -23,9 +22,17 @@ public abstract class ContentAdapter<T> {
         return mData.size();
     }
 
+    public void clear() {
+        mData.clear();
+    }
+
+    public void update(List<T> data) {
+        mData.addAll(data);
+    }
+
     protected abstract View getView(ViewGroup viewGroup);
 
-    protected T getItem() {
+    protected T getNextItem() {
         return mData.get(mNextPosition < mData.size() ? mNextPosition : 0);
     }
 }

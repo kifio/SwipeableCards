@@ -3,15 +3,15 @@
     <string name="app_name">SwipeableCards</string>
     <string name="greetings">Greetings</string>
 
-    <string-array name="cards_titles">
-        <item>Finn</item>
-        <item>Jake</item>
-        <item>Bubblegum Princes</item>
-        <item>Ice King</item>
-        <item>Marceline</item>
-        <item>BMO</item>
-        <item>Susann Strong</item>
-        <item>Peppermint Butler</item>
+    <string-array name="numbers">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
     </string-array>
 
 </resources>

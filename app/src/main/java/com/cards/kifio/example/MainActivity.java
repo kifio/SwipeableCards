@@ -7,9 +7,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cards.kifio.swipeablecards.CardsView;
 import com.cards.kifio.swipeablecards.ContentAdapter;
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements CardsView.OnSwipe
 
         LinearLayout content = (LinearLayout) findViewById(R.id.content);
 
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 2; i < 5; i++) {
 
             CardsView cardsView = new CardsView(this, i);
             content.addView(cardsView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -36,19 +38,19 @@ public class MainActivity extends AppCompatActivity implements CardsView.OnSwipe
             lp.gravity = Gravity.CENTER;
             content.requestLayout();
 
-            if (i % 2 == 0 && i % 3 != 0) {
+            if (i == 2) {
                 cardsView.setInfinite(true);
-            } else if (i % 3 == 0){
+            } else if (i == 3) {
                 cardsView.setMovable(true);
             } else {
                 cardsView.setInfinite(true);
                 cardsView.setMovable(true);
             }
 
-            cardsView.setYPositionDiff(i * 20);
+            cardsView.setYPositionDiff(i * 8);
             cardsView.setHorizontalSpaceMargin(i);
 
-            cardsView.setAdapter(new CardsAdapter(getResources().getStringArray(R.array.cards_titles)));
+            cardsView.setAdapter(new CardsAdapter(getResources().getStringArray(R.array.numbers)));
             cardsView.setOnCardSwipeListener(this);
             cardsView.setScrollableParent(findViewById(R.id.scroll_view));
             cardsView.reload();
@@ -63,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements CardsView.OnSwipe
 
     static class CardsAdapter extends ContentAdapter<String> {
 
-        CardsAdapter(String[] titles) {
-            super(Arrays.asList(titles));
+        CardsAdapter(String[] numbers) {
+            super(Arrays.asList(numbers));
         }
 
         @Override
@@ -72,8 +74,17 @@ public class MainActivity extends AppCompatActivity implements CardsView.OnSwipe
 
             View view =  LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.v_card, viewGroup, false);
 
+            final String titleText = getNextItem();
+
             TextView title = (TextView) view.findViewById(R.id.title);
-            title.setText(getItem() + " : " + mNextPosition);
+            title.setText(titleText);
+
+            title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), "Card: " + titleText, Toast.LENGTH_SHORT).show();
+                }
+            });
 
             return view;
         }

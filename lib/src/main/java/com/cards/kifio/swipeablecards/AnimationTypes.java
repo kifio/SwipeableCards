@@ -9,17 +9,17 @@ import java.lang.annotation.RetentionPolicy;
  * Created by kifio on 2/7/17.
  */
 
-class AnimationTypes {
+public class AnimationTypes {
 
     /**
      * Swipe card to the left.
      */
-    static final int LEFT_SWIPE = 0;
+    public static final int LEFT_SWIPE = 0;
 
     /**
      * Swipe card to the right.
      */
-    static final int RIGHT_SWIPE = 1;
+    public static final int RIGHT_SWIPE = 1;
 
     /**
      * Move card to initial position in movable mode.

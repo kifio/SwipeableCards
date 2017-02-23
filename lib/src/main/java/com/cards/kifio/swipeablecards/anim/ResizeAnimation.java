@@ -33,11 +33,13 @@ public class ResizeAnimation extends Animation {
 
         mWidthDiff = 2 * marginDiff;
         mYDiff = yDiff;
+        Log.d(TAG, "ResizeAnimation: " + yDiff + "; position: " + view.getTag() + "; view.getY: " + view.getY());
     }
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
         mLp.width = (int) (mStartWidth + mWidthDiff * interpolatedTime);
+        Log.d(TAG, "applyTransformation: " + (mStartY - mYDiff * interpolatedTime));
         mView.setY(mStartY - mYDiff * interpolatedTime);
         mView.requestLayout();
     }

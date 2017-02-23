@@ -1,7 +1,6 @@
 package com.cards.kifio.swipeablecards;
 
 import android.support.v4.view.MotionEventCompat;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -148,10 +147,5 @@ public class OnTouchCardListener implements View.OnTouchListener {
 
     void setScrollableParent(View scrollableParent) {
         mScrollableParent = (ViewParent) scrollableParent;
-    }
-
-    public void dispose() {
-        mScrollableParent = null;
-        mVelocityTracker = null;
     }
 }
