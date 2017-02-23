@@ -64,13 +64,13 @@ class CardsAdapter extends ContentAdapter<String> {
 ```
 
 If in your view hierarchy ScrollView or NestedScrollView exist, 
-i recommended call setScrollableParent(ViewParent viewParent) method and pass ref to this view as argument.  
-It's allow you to avoid scroll events when user swipe cards.
+i recommended call setScrollableParent(View scrollView) method and pass ref to this view as argument.
+It's allow you to avoid scroll events when user try to swipe cards.
 
 ```java
     CardsView cardsView = (CardsView) findViewById(R.id.cardsView);
     cardsView.setAdapter(new Adapter());
-    cardsView.setScrollableParent((ViewParent) findViewById(R.id.root));
+    cardsView.setScrollableParent(findViewById(R.id.root));
     cardsView.reload();
 ```
 
