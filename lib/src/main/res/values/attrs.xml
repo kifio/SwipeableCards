@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CardsView">
+
+        <!-- Смещение каждой карточки по высоте -->
+        <attr name="vertical_offset" format="dimension"/>
+
+        <!-- Отступы для верхней карточки слева и справа -->
+        <attr name="horizontal_margin" format="dimension"/>
+
+        <!-- Разница между отступами для соседних карточек -->
+        <attr name="horizontal_margin_difference" format="dimension"/>
+
+        <!-- Видимое количество карточек (В адаптере их может быть 20, а видимых всего 5) -->
+        <attr name="visibleViewsCount" format="integer" />
+
+    </declare-styleable>
+</resources>
