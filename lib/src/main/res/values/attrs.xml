@@ -2,12 +2,17 @@
 <resources>
     <declare-styleable name="CardsView">
 
-        <attr name="yPositionDiff" format="dimension"/>
-        <attr name="horizontalSpaceMargin" format="dimension"/>
+        <!-- Смещение каждой карточки по высоте -->
+        <attr name="vertical_offset" format="dimension"/>
+
+        <!-- Отступы для верхней карточки слева и справа -->
+        <attr name="horizontal_margin" format="dimension"/>
+
+        <!-- Разница между отступами для соседних карточек -->
+        <attr name="horizontal_margin_difference" format="dimension"/>
+
+        <!-- Видимое количество карточек (В адаптере их может быть 20, а видимых всего 5) -->
         <attr name="visibleViewsCount" format="integer" />
-        <attr name="infinite" format="boolean" />
-        <attr name="movable" format="boolean" />
-        <attr name="reverse" format="boolean" />
 
     </declare-styleable>
 </resources>

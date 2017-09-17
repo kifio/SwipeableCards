@@ -5,12 +5,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/content"
-        android:background="@android:color/holo_blue_bright"
+    <com.cards.kifio.CardsLayout
+        android:id="@+id/cardsLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loremIpsum"/>
+
+    </com.cards.kifio.CardsLayout>
 
 </ScrollView>
 
